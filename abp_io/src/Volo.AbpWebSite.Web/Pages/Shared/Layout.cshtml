@@ -12,9 +12,9 @@
 }
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh-Hans">
 <head>
-    <title>@(ViewBag.Title == null ? "abp.io" : ViewBag.Title)</title>
+    <title>@(ViewBag.Title == null ? "ABP中文网 - ASP.NET Core开源Web应用程序框架 - 中文官网" : ViewBag.Title)</title>
     @await Component.InvokeAsync(typeof(StandardMetaViewComponent))
     <abp-style-bundle name="@AbpIoBundles.Styles.Global" />
     @RenderSection("styles", false)
@@ -48,14 +48,14 @@
         <abp-script src="/js/vs.js" />
     </abp-script-bundle>
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-49982725-4"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-
-        gtag('config', 'UA-49982725-4');
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?1715ccf0d3bd4188670dccc25c5d7fef";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
     </script>
 
     @RenderSection("scripts", false)

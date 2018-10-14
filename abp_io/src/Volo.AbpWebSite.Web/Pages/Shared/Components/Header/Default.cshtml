@@ -9,21 +9,22 @@
             <a class="navbar-brand" href="/"><img src="/assets/abp-logo-light.svg" class="home-logo"></a>
 
             <div class="collapse navbar-collapse" id="product-nav">
-                <ul class="navbar-nav mr-auto ml-auto mt-2 mt-lg-0">
+                <ul class="navbar-nav mt-2 mt-lg-0">
                     <li class="nav-item active">
-                        <a class="nav-link" href="/">Home</a>
+                        <a class="nav-link" href="/">首页</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/Templates">Download</a>
+                        <a class="nav-link" href="https://twitter.com/abpframework" target="_blank">动态</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/documents">Documents</a>
+                        <a class="nav-link" href="/documents"
+                            target="_blank">文档</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/blog/abp/">Blog</a>
+                        <a class="nav-link" href="Templates">下载</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="https://github.com/abpframework/abp/" target="_blank">Github</a>
+                        <a class="nav-link" href="/blog/abp/">博客</a>
                     </li>
                     <li class="for-mobile">
                         <button type="button" class="close close-mmenu" aria-label="Close">
@@ -36,15 +37,15 @@
             <div class="form-inline my-2 my-lg-0">
                 @if (CurrentUser.IsAuthenticated)
                 {
-                    <a class="btn btn-logout" href="/Account/Logout">Logout (@CurrentUser.UserName)</a>
+                    <a class="btn btn-logout" href="/Account/Logout">登陆为 (@CurrentUser.UserName)</a>
                 }
                 else
                 {
-                    <a class="btn btn-login" href="/Account/Logout">Login</a>
+                    <a class="btn btn-login" href="/Account/Logout">登陆</a>
                 }
                 <a class="btn my-2 my-sm-0 text-success" href="/Templates">
-                    <span class="for-desktop">Getting Started</span>
-                    <span class="for-mobile">Go</span>
+                    <span class="for-desktop">入门</span>
+                    <span class="for-mobile">入门</span>
                     <i class="fa fa-long-arrow-right"></i>
                 </a>
             </div>
