@@ -3,10 +3,28 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
 {
-    public partial class Added_Identity_And_Blogging_Modules : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AbpClaimTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(maxLength: 256, nullable: false),
+                    Required = table.Column<bool>(nullable: false),
+                    IsStatic = table.Column<bool>(nullable: false),
+                    Regex = table.Column<string>(maxLength: 512, nullable: true),
+                    RegexDescription = table.Column<string>(maxLength: 128, nullable: true),
+                    Description = table.Column<string>(maxLength: 256, nullable: true),
+                    ValueType = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AbpClaimTypes", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AbpPermissionGrants",
                 columns: table => new
@@ -98,6 +116,65 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BlgBlogs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlgTags",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorId = table.Column<Guid>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierId = table.Column<Guid>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    Name = table.Column<string>(maxLength: 64, nullable: false),
+                    Description = table.Column<string>(maxLength: 512, nullable: true),
+                    UsageCount = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlgTags", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlgUsers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
+                    UserName = table.Column<string>(maxLength: 256, nullable: false),
+                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(nullable: false, defaultValue: false),
+                    PhoneNumber = table.Column<string>(maxLength: 16, nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(nullable: false, defaultValue: false),
+                    ExtraProperties = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlgUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DocsProjects",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(maxLength: 128, nullable: false),
+                    ShortName = table.Column<string>(maxLength: 32, nullable: false),
+                    Format = table.Column<string>(nullable: true),
+                    DefaultDocumentName = table.Column<string>(maxLength: 128, nullable: false),
+                    NavigationDocumentName = table.Column<string>(maxLength: 128, nullable: false),
+                    DocumentStoreType = table.Column<string>(nullable: true),
+                    GoogleCustomSearchId = table.Column<string>(nullable: true),
+                    ExtraProperties = table.Column<string>(nullable: true),
+                    MainWebsiteUrl = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DocsProjects", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -194,8 +271,8 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                 {
                     TenantId = table.Column<Guid>(nullable: true),
                     UserId = table.Column<Guid>(nullable: false),
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    Name = table.Column<string>(nullable: false),
+                    LoginProvider = table.Column<string>(maxLength: 64, nullable: false),
+                    Name = table.Column<string>(maxLength: 128, nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -223,8 +300,10 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                     DeletionTime = table.Column<DateTime>(nullable: true),
                     BlogId = table.Column<Guid>(nullable: false),
                     Url = table.Column<string>(maxLength: 64, nullable: false),
+                    CoverImage = table.Column<string>(nullable: false),
                     Title = table.Column<string>(maxLength: 512, nullable: false),
-                    Content = table.Column<string>(maxLength: 1048576, nullable: true)
+                    Content = table.Column<string>(maxLength: 1048576, nullable: true),
+                    ReadCount = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -233,6 +312,65 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                         name: "FK_BlgPosts_BlgBlogs_BlogId",
                         column: x => x.BlogId,
                         principalTable: "BlgBlogs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlgComments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorId = table.Column<Guid>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierId = table.Column<Guid>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    PostId = table.Column<Guid>(nullable: false),
+                    RepliedCommentId = table.Column<Guid>(nullable: true),
+                    Text = table.Column<string>(maxLength: 1024, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlgComments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BlgComments_BlgPosts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "BlgPosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BlgComments_BlgComments_RepliedCommentId",
+                        column: x => x.RepliedCommentId,
+                        principalTable: "BlgComments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlgPostTags",
+                columns: table => new
+                {
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorId = table.Column<Guid>(nullable: true),
+                    PostId = table.Column<Guid>(nullable: false),
+                    TagId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlgPostTags", x => new { x.PostId, x.TagId });
+                    table.ForeignKey(
+                        name: "FK_BlgPostTags_BlgPosts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "BlgPosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BlgPostTags_BlgTags_TagId",
+                        column: x => x.TagId,
+                        principalTable: "BlgTags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -293,13 +431,31 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                 column: "UserName");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BlgComments_PostId",
+                table: "BlgComments",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlgComments_RepliedCommentId",
+                table: "BlgComments",
+                column: "RepliedCommentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BlgPosts_BlogId",
                 table: "BlgPosts",
                 column: "BlogId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlgPostTags_TagId",
+                table: "BlgPostTags",
+                column: "TagId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AbpClaimTypes");
+
             migrationBuilder.DropTable(
                 name: "AbpPermissionGrants");
 
@@ -322,13 +478,28 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                 name: "AbpUserTokens");
 
             migrationBuilder.DropTable(
-                name: "BlgPosts");
+                name: "BlgComments");
+
+            migrationBuilder.DropTable(
+                name: "BlgPostTags");
+
+            migrationBuilder.DropTable(
+                name: "BlgUsers");
+
+            migrationBuilder.DropTable(
+                name: "DocsProjects");
 
             migrationBuilder.DropTable(
                 name: "AbpRoles");
 
             migrationBuilder.DropTable(
                 name: "AbpUsers");
+
+            migrationBuilder.DropTable(
+                name: "BlgPosts");
+
+            migrationBuilder.DropTable(
+                name: "BlgTags");
 
             migrationBuilder.DropTable(
                 name: "BlgBlogs");

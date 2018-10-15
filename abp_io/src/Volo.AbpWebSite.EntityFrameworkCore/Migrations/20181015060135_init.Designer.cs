@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.AbpWebSite.EntityFrameworkCore;
@@ -10,16 +9,44 @@ using Volo.AbpWebSite.EntityFrameworkCore;
 namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(AbpWebSiteDbContext))]
-    [Migration("20180911135940_Added_CoverImage")]
-    partial class Added_CoverImage
+    [Migration("20181015060135_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("Volo.Abp.Identity.IdentityClaimType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256);
+
+                    b.Property<bool>("IsStatic");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256);
+
+                    b.Property<string>("Regex")
+                        .HasMaxLength(512);
+
+                    b.Property<string>("RegexDescription")
+                        .HasMaxLength(128);
+
+                    b.Property<bool>("Required");
+
+                    b.Property<int>("ValueType");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AbpClaimTypes");
+                });
 
             modelBuilder.Entity("Volo.Abp.Identity.IdentityRole", b =>
                 {
@@ -221,9 +248,10 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                     b.Property<Guid>("UserId");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128);
+                        .HasMaxLength(64);
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasMaxLength(128);
 
                     b.Property<Guid?>("TenantId");
 
@@ -503,6 +531,45 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                     b.ToTable("BlgTags");
                 });
 
+            modelBuilder.Entity("Volo.Blogging.Users.BlogUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Email")
+                        .HasColumnName("Email")
+                        .HasMaxLength(256);
+
+                    b.Property<bool>("EmailConfirmed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("EmailConfirmed")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnName("PhoneNumber")
+                        .HasMaxLength(16);
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("PhoneNumberConfirmed")
+                        .HasDefaultValue(false);
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnName("UserName")
+                        .HasMaxLength(256);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BlgUsers");
+                });
+
             modelBuilder.Entity("Volo.Docs.Projects.Project", b =>
                 {
                     b.Property<Guid>("Id")
@@ -521,6 +588,8 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
 
                     b.Property<string>("GoogleCustomSearchId");
 
+                    b.Property<string>("MainWebsiteUrl");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128);
@@ -536,37 +605,6 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DocsProjects");
-                });
-
-            modelBuilder.Entity("Volo.Utils.SolutionTemplating.DownloadInfo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CreationDuration");
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<Guid?>("CreatorId");
-
-                    b.Property<byte>("DatabaseProvider");
-
-                    b.Property<string>("ProjectName")
-                        .IsRequired()
-                        .HasMaxLength(128);
-
-                    b.Property<string>("TemplateName")
-                        .IsRequired()
-                        .HasMaxLength(42);
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasMaxLength(20);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Downloads");
                 });
 
             modelBuilder.Entity("Volo.Abp.Identity.IdentityRoleClaim", b =>

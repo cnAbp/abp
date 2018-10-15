@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace Volo.AbpWebSite.EntityFrameworkCore
 {
@@ -11,8 +13,9 @@ namespace Volo.AbpWebSite.EntityFrameworkCore
         {
             var configuration = BuildConfiguration();
 
-            var builder = new DbContextOptionsBuilder<AbpWebSiteDbContext>()
-                .UseSqlServer(configuration.GetConnectionString("Default"));
+            var builder = new DbContextOptionsBuilder<AbpWebSiteDbContext>().UseMySql(
+                configuration.GetConnectionString("Default"),
+                options => { options.ServerVersion(new Version(8, 0, 12), ServerType.MySql); });
 
             return new AbpWebSiteDbContext(builder.Options);
         }
@@ -21,7 +24,7 @@ namespace Volo.AbpWebSite.EntityFrameworkCore
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../Volo.AbpWebSite.Web/"))
-                .AddJsonFile("appsettings.json", optional: false);
+                .AddJsonFile("appsettings.json", false);
 
             return builder.Build();
         }

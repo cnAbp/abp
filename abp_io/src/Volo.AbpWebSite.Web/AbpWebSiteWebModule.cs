@@ -1,13 +1,16 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Volo.Abp;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Modularity;
@@ -102,7 +105,19 @@ namespace Volo.AbpWebSite
 
             services.Configure<AbpDbContextOptions>(options =>
             {
-                options.UseSqlServer();
+                options.Configure(context =>
+                {
+                    if (context.ExistingConnection != null)
+                    {
+                        context.DbContextOptions.UseMySql(context.ExistingConnection,
+                            mysqlOptions => { mysqlOptions.ServerVersion(new Version(8, 0, 12), ServerType.MySql); });
+                    }
+                    else
+                    {
+                        context.DbContextOptions.UseMySql(context.ConnectionString,
+                            mysqlOptions => { mysqlOptions.ServerVersion(new Version(8, 0, 12), ServerType.MySql); });
+                    }
+                });
             });
         }
 
@@ -140,9 +155,9 @@ namespace Volo.AbpWebSite
 
             app.UseRequestLocalization(options =>
             {
-                options.DefaultRequestCulture = new RequestCulture("en-US", "en-US");
-                options.AddSupportedCultures("en-US");
-                options.AddSupportedUICultures("en-US");
+                options.DefaultRequestCulture = new RequestCulture("zh-Hans", "zh-Hans");
+                options.AddSupportedCultures("zh-Hans");
+                options.AddSupportedUICultures("zh-Hans");
             });
 
             if (env.IsDevelopment())
