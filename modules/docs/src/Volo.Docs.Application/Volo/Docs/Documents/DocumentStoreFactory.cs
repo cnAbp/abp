@@ -19,6 +19,10 @@ namespace Volo.Docs.Documents
             {
                 case GithubDocumentStore.Type:
                     return _serviceProvider.GetRequiredService<GithubDocumentStore>();
+
+                case GiteeDocumentStore.Type:
+                    return _serviceProvider.GetRequiredService<GiteeDocumentStore>();
+
                 default:
                     throw new ApplicationException($"Undefined document store: {documentStoreType}");
             }
