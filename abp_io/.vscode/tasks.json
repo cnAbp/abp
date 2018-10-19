@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Volo.AbpWebSite.Web.csproj"
+                "${workspaceFolder}/src/Volo.AbpWebSite.Web/Volo.AbpWebSite.Web.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

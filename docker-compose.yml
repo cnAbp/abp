@@ -1,0 +1,30 @@
+version: "3"
+services:
+  cn.abp.io:
+    container_name: cn.abp.io
+    image: cnabp/cn.abp.io:1.0
+    depends_on:
+      - cn.abp.io.mysql
+    restart: always
+
+  cn.abp.io.mysql:
+    image: mysql:8.0.12
+    container_name: cn.abp.io.mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: qwe123
+    restart: always
+    volumes:
+      - /var/www/cn.abp.io/mysqldb:/var/lib/mysql
+
+  cn.abp.io.nginx:
+    image: nginx
+    container_name: cn.abp.io.nginx
+    restart: always
+    depends_on:
+      - cn.abp.io
+    volumes:
+      - /var/www/cn.abp.io/nginx/certs:/etc/nginx/certs
+      - /var/www/cn.abp.io/nginx/conf.d:/etc/nginx/conf.d
+    ports:
+       - "80:80"
+       - "443:443"
