@@ -38,12 +38,17 @@ $(document).ready(function () {
     $('body').scrollspy({
         target: $myNav
     });
+    if(document.location.href.indexOf('#') !== -1){
+        $('html, body').animate({
+            scrollTop: $(decodeURIComponent(document.location.hash)).offset().top
+        }, 500);
+    }
     $("#docs-sticky-index a").on('click', function (event) {
         if (this.hash !== "") {
             event.preventDefault();
             var hash = this.hash;
             $('html, body').animate({
-                scrollTop: $(hash).offset().top
+                scrollTop: $(decodeURIComponent(hash)).offset().top
             }, 500, function () {
                 window.location.hash = hash;
             });

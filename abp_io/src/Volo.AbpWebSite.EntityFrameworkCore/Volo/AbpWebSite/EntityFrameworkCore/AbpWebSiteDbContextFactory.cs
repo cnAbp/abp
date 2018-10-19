@@ -22,10 +22,13 @@ namespace Volo.AbpWebSite.EntityFrameworkCore
 
         private static IConfigurationRoot BuildConfiguration()
         {
+            var evn = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../Volo.AbpWebSite.Web/"))
-                .AddJsonFile("appsettings.json", false);
-
+                .AddJsonFile("appsettings.json", false)
+                .AddJsonFile($"appsettings.{evn}.json", true);
+                
             return builder.Build();
         }
     }
