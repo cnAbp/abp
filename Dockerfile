@@ -4,6 +4,14 @@ EXPOSE 80
 
 WORKDIR /build
 
+# install System.Drawing native dependencies
+RUN apt-get update \
+    && apt-get install -y --allow-unauthenticated \
+        libc6-dev \
+        libgdiplus \
+        libx11-dev \
+     && rm -rf /var/lib/apt/lists/*
+     
 COPY ["framework", "framework"]
 COPY ["modules", "modules"]
 COPY ["abp_io", "abp_io"]
