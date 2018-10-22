@@ -605,6 +605,36 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                     b.ToTable("DocsProjects");
                 });
 
+            modelBuilder.Entity("Volo.Utils.SolutionTemplating.DownloadInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("CreationDuration");
+
+                    b.Property<DateTime>("CreationTime");
+
+                    b.Property<Guid?>("CreatorId");
+
+                    b.Property<byte>("DatabaseProvider");
+
+                    b.Property<string>("ProjectName")
+                        .IsRequired()
+                        .HasMaxLength(128);
+
+                    b.Property<string>("TemplateName")
+                        .IsRequired()
+                        .HasMaxLength(42);
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(20);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Downloads");
+                });
+
             modelBuilder.Entity("Volo.Abp.Identity.IdentityRoleClaim", b =>
                 {
                     b.HasOne("Volo.Abp.Identity.IdentityRole")
