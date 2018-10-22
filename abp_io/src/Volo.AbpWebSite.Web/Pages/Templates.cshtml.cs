@@ -74,7 +74,7 @@ namespace Volo.AbpWebSite.Pages
 
                 if (!geetestValidate)
                 {
-                    ModelState.AddModelError(string.Empty, "��ͨ���˻���֤!");
+                    ModelState.AddModelError(string.Empty, "请完成人机验证!");
                     return Page();
                 }
 
