@@ -2,10 +2,13 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Geetest.Core;
+using Geetest.Core.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +24,7 @@ using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theming;
 using Volo.Abp.Autofac;
+using Volo.Abp.Configuration;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.Identity;
@@ -69,6 +73,19 @@ namespace Volo.AbpWebSite
             ConfigureVirtualFileSystem(context.Services, hostingEnvironment);
             ConfigureBundles(context.Services);
             ConfigureTheme(context.Services);
+
+            context.Services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            context.Services.AddTransient<IGeetestManager, GeetestManager>();
+            context.Services.AddTransient<IClientInfoProvider, ClientInfoProvider>();
+            context.Services.AddSingleton<IGeetestConfiguration, GeetestConfiguration>();
+
+            context.Services.AddSingleton<IGeetestConfiguration>(provider =>
+                new GeetestConfiguration(provider.GetRequiredService<IClientInfoProvider>())
+                {
+                    Id = configuration["Captcha:Geetest:Id"],
+                    Key = configuration["Captcha:Geetest:Key"]
+                });
         }
 
         private static void ConfigureBundles(IServiceCollection services)

@@ -21,6 +21,7 @@ RUN dotnet build "abp_io/src/Volo.AbpWebSite.Web/Volo.AbpWebSite.Web.csproj" -c 
 RUN dotnet publish "abp_io/src/Volo.AbpWebSite.Web/Volo.AbpWebSite.Web.csproj" -c Release -o /prod
 
 WORKDIR /prod
+RUN mkdir TemplateFiles
 COPY ["entrypoint.sh", "entrypoint.sh"]
 RUN chmod +x ./entrypoint.sh
 CMD /bin/bash ./entrypoint.sh
