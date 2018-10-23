@@ -2,3 +2,18 @@
 .footer-logo {
     width: 140px;
 }
+
+.qrtooltip {
+    .tooltip-inner {
+        max-width: 150px;
+        padding: 5px;
+        color: #fff;
+        text-align: center;
+        background-color: #fff;
+        border-radius: 0.25rem;
+    }
+
+    .arrow {
+        display: none;
+    }
+}

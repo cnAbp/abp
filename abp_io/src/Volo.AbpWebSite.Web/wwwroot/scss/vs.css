@@ -255,6 +255,17 @@ header .btn {
 .footer-logo {
   width: 140px; }
 
+.qrtooltip .tooltip-inner {
+  max-width: 150px;
+  padding: 5px;
+  color: #fff;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 0.25rem; }
+
+.qrtooltip .arrow {
+  display: none; }
+
 .jumbotron {
   background: #006bf0;
   background: -moz-linear-gradient(left, #006bf0 0%, #40ffb0 100%);
@@ -691,4 +702,3 @@ span.code-arrow {
   max-width: 400px;
   margin: 0 auto;
   margin-top: -88px !important; }
-
