@@ -36,6 +36,7 @@ using Volo.Abp.UI;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.VirtualFileSystem;
 using Volo.AbpWebSite.Bundling;
+using Volo.AbpWebSite.EntityFrameworkCore;
 using Volo.Blogging;
 using Volo.Docs;
 
@@ -169,6 +170,8 @@ namespace Volo.AbpWebSite
         {
             var app = context.GetApplicationBuilder();
             var env = context.GetEnvironment();
+
+            app.ApplicationServices.GetService<AbpWebSiteDbContext>().Database.Migrate();
 
             app.UseRequestLocalization(options =>
             {
