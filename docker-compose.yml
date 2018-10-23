@@ -2,10 +2,15 @@ version: "3"
 services:
   cn.abp.io:
     container_name: cn.abp.io
-    image: cnabp/cn.abp.io:3.2
+    image: cnabp/cn.abp.io:4.0
     depends_on:
       - cn.abp.io.mysql
     restart: always
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+    volumes:
+      - /var/www/cn.abp.io/web/wwwroot/files:/app/wwwroot/files
+      - /var/www/cn.abp.io/web/Logs:/app/Logs
 
   cn.abp.io.mysql:
     image: mysql:8.0.12
