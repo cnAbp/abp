@@ -34,6 +34,8 @@ namespace Volo.Docs.Projects
         /// </summary>
         public virtual string NavigationDocumentName { get; protected set; }
 
+        public virtual string MinimumVersion { get; set; }
+
         /// <summary>
         /// The source of the documents (e.g. Github).
         /// </summary>
@@ -44,6 +46,8 @@ namespace Volo.Docs.Projects
         public virtual Dictionary<string, object> ExtraProperties { get; protected set; }
 
         public virtual string MainWebsiteUrl { get; protected set; }
+
+        public virtual string LatestVersionBranchName { get; set; }
 
         protected Project()
         {

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Volo.Docs.Documents;
+using Volo.Docs.Utils;
 
 namespace Volo.Docs.Areas.Documents.Helpers.TagHelpers
 {
@@ -116,6 +117,11 @@ namespace Volo.Docs.Areas.Documents.Helpers.TagHelpers
 
         private string NormalizePath(string path, bool hasChildItems)
         {
+            if (UrlHelper.IsExternalLink(path))
+            {
+                return path;
+            }
+
             var pathWithoutFileExtension = RemoveFileExtensionFromPath(path);
 
             if (string.IsNullOrWhiteSpace(path))
@@ -137,6 +143,5 @@ namespace Volo.Docs.Areas.Documents.Helpers.TagHelpers
                  ? path.Left(path.Length - ProjectFormat.Length - 1)
                  : path;
         }
-
     }
 }

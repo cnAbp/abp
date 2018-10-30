@@ -702,3 +702,6 @@ span.code-arrow {
   max-width: 400px;
   margin: 0 auto;
   margin-top: -88px !important; }
+
+body {
+  background-size: cover; }

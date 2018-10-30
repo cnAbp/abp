@@ -22,6 +22,8 @@ namespace Volo.Docs.Pages.Documents.Project
         [BindProperty(SupportsGet = true)]
         public string DocumentName { get; set; }
 
+        public string ProjectDisplayName { get; set; }
+
         public string ProjectFormat { get; private set; }
 
         public string DocumentNameWithExtension { get; private set; }
@@ -40,7 +42,10 @@ namespace Volo.Docs.Pages.Documents.Project
         private readonly IDocumentConverterFactory _documentConverterFactory;
         private readonly IProjectAppService _projectAppService;
 
-        public IndexModel(IDocumentAppService documentAppService, IDocumentConverterFactory documentConverterFactory, IProjectAppService projectAppService)
+        public IndexModel(
+            IDocumentAppService documentAppService, 
+            IDocumentConverterFactory documentConverterFactory, 
+            IProjectAppService projectAppService)
         {
             _documentAppService = documentAppService;
             _documentConverterFactory = documentConverterFactory;
@@ -69,6 +74,7 @@ namespace Volo.Docs.Pages.Documents.Project
         private void SetPageParams(ProjectDto project)
         {
             ProjectFormat = project.Format;
+            ProjectDisplayName = project.Name;
 
             if (DocumentName.IsNullOrWhiteSpace())
             {
@@ -83,7 +89,7 @@ namespace Volo.Docs.Pages.Documents.Project
             Versions = (await _documentAppService
                 .GetVersions(project.ShortName, project.DefaultDocumentName, project.ExtraProperties,
                     project.DocumentStoreType, DocumentNameWithExtension))
-                    .Select(v => new VersionInfo(v, v)).ToList();
+                    .Select(v => new VersionInfo(v.DisplayName, v.Name)).ToList();
 
             LatestVersionInfo = GetLatestVersion();
 

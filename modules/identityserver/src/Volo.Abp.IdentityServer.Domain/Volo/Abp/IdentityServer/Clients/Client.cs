@@ -153,6 +153,11 @@ namespace Volo.Abp.IdentityServer.Clients
             );
         }
 
+        public virtual void RemoveAllAllowedGrantTypes()
+        {
+            AllowedGrantTypes.Clear();
+        }
+
         public virtual void AddSecret([NotNull] string value, DateTime? expiration = null, string type = IdentityServerConstants.SecretTypes.SharedSecret, string description = null)
         {
             ClientSecrets.Add(new ClientSecret(Id, value, expiration, type, description));
@@ -166,6 +171,11 @@ namespace Volo.Abp.IdentityServer.Clients
         public virtual void AddScope([NotNull] string scope)
         {
             AllowedScopes.Add(new ClientScope(Id, scope));
+        }
+
+        public virtual void RemoveAllScopes()
+        {
+            AllowedScopes.Clear();
         }
 
         public virtual void AddCorsOrigin([NotNull] string origin)
@@ -183,14 +193,39 @@ namespace Volo.Abp.IdentityServer.Clients
             PostLogoutRedirectUris.Add(new ClientPostLogoutRedirectUri(Id, postLogoutRedirectUri));
         }
 
+        public virtual void RemoveAllCorsOrigin()
+        {
+            AllowedCorsOrigins.Clear();
+        }
+
+        public virtual void RemoveAllRedirectUri()
+        {
+            RedirectUris.Clear();
+        }
+
+        public virtual void RemoveAllPostLogoutRedirectUri()
+        {
+            PostLogoutRedirectUris.Clear();
+        }
+
         public virtual void AddIdentityProviderRestriction([NotNull] string provider)
         {
             IdentityProviderRestrictions.Add(new ClientIdPRestriction(Id, provider));
         }
 
-        public virtual void AddProperty([NotNull] string key)
+        public virtual void RemoveAllIdentityProviderRestriction()
         {
-            Properties.Add(new ClientProperty(Id, key));
+            IdentityProviderRestrictions.Clear();
+        }
+
+        public virtual void AddProperty([NotNull] string key, [NotNull] string value)
+        {
+            Properties.Add(new ClientProperty(Id, key,value));
+        }
+
+        public virtual void RemoveAllProperties()
+        {
+            Properties.Clear();
         }
 
         public virtual void AddClaim(IGuidGenerator guidGenerator, [NotNull] string type, string value)

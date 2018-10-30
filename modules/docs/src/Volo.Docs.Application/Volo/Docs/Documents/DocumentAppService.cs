@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Volo.Abp.Application.Services;
@@ -11,12 +12,12 @@ namespace Volo.Docs.Documents
     public class DocumentAppService : ApplicationService, IDocumentAppService
     {
         private readonly IProjectRepository _projectRepository;
-        private readonly IDistributedCache<List<string>> _distributedCache;
+        private readonly IDistributedCache<List<VersionInfoDto>> _distributedCache;
         private readonly IDocumentStoreFactory _documentStoreFactory;
 
         public DocumentAppService(
             IProjectRepository projectRepository,
-            IDistributedCache<List<string>> distributedCache,
+            IDistributedCache<List<VersionInfoDto>> distributedCache,
             IDocumentStoreFactory documentStoreFactory)
         {
             _projectRepository = projectRepository;
@@ -63,9 +64,12 @@ namespace Volo.Docs.Documents
             return dto;
         }
 
-        public async Task<List<string>> GetVersions(string projectShortName, string defaultDocumentName, Dictionary<string, object> projectExtraProperties,
+        //TODO: Application service never gets such a parameter: Dictionary<string, object> projectExtraProperties !!!
+        public async Task<List<VersionInfoDto>> GetVersions(string projectShortName, string defaultDocumentName, Dictionary<string, object> projectExtraProperties,
             string documentStoreType, string documentName)
         {
+            var project = await _projectRepository.FindByShortNameAsync(projectShortName);
+
             if (string.IsNullOrWhiteSpace(documentName))
             {
                 documentName = defaultDocumentName;
@@ -81,15 +85,29 @@ namespace Volo.Docs.Documents
                 await SetVersionsToCache(projectShortName, versions);
             }
 
+            if (!project.MinimumVersion.IsNullOrEmpty())
+            {
+                var minVersionIndex = versions.FindIndex(v => v.Name == project.MinimumVersion);
+                if (minVersionIndex > -1)
+                {
+                    versions = versions.GetRange(0, minVersionIndex + 1);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(project.LatestVersionBranchName))
+            {
+                versions.First().Name = project.LatestVersionBranchName;
+            }
+            
             return versions;
         }
 
-        private async Task<List<string>> GetVersionsFromCache(string projectShortName)
+        private async Task<List<VersionInfoDto>> GetVersionsFromCache(string projectShortName)
         {
             return await _distributedCache.GetAsync(projectShortName);
         }
 
-        private async Task SetVersionsToCache(string projectShortName, List<string> versions)
+        private async Task SetVersionsToCache(string projectShortName, List<VersionInfoDto> versions)
         {
             var options = new DistributedCacheEntryOptions() { SlidingExpiration = TimeSpan.FromDays(1) };
             await _distributedCache.SetAsync(projectShortName, versions, options);

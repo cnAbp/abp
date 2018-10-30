@@ -59,6 +59,55 @@ namespace Volo.Abp.IdentityServer.Clients
                 DbContext.Set<ClientClaim>().Remove(claim);
             }
 
+            var grantTypes = DbContext.Set<ClientGrantType>().Where(s => s.ClientId == entity.Id);
+
+            foreach (var grantType in grantTypes)
+            {
+                DbContext.Set<ClientGrantType>().Remove(grantType);
+            }
+
+            var restrictions = DbContext.Set<ClientIdPRestriction>().Where(s => s.ClientId == entity.Id);
+
+            foreach (var restriction in restrictions)
+            {
+                DbContext.Set<ClientIdPRestriction>().Remove(restriction);
+            }
+
+            var properties = DbContext.Set<ClientProperty>().Where(s => s.ClientId == entity.Id);
+
+            foreach (var clientProperty in properties)
+            {
+                DbContext.Set<ClientProperty>().Remove(clientProperty);
+            }
+
+            var scopes = DbContext.Set<ClientScope>().Where(s => s.ClientId == entity.Id);
+
+            foreach (var scope in scopes)
+            {
+                DbContext.Set<ClientScope>().Remove(scope);
+            }
+
+            var corsOrigins = DbContext.Set<ClientCorsOrigin>().Where(s => s.ClientId == entity.Id);
+
+            foreach (var corsOrigin in corsOrigins)
+            {
+                DbContext.Set<ClientCorsOrigin>().Remove(corsOrigin);
+            }
+
+            var redirectUris = DbContext.Set<ClientRedirectUri>().Where(s => s.ClientId == entity.Id);
+
+            foreach (var redirectUri in redirectUris)
+            {
+                DbContext.Set<ClientRedirectUri>().Remove(redirectUri);
+            }
+
+            var postLogoutRedirectUris = DbContext.Set<ClientPostLogoutRedirectUri>().Where(s => s.ClientId == entity.Id);
+
+            foreach (var postLogoutRedirectUri in postLogoutRedirectUris)
+            {
+                DbContext.Set<ClientPostLogoutRedirectUri>().Remove(postLogoutRedirectUri);
+            }
+
             return await base.UpdateAsync(entity, autoSave, cancellationToken);
         }
 
