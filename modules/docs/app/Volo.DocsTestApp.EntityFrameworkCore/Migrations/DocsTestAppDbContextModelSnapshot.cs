@@ -15,7 +15,7 @@ namespace Volo.DocsTestApp.EntityFrameworkCore.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.3-rtm-32065")
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -37,7 +37,12 @@ namespace Volo.DocsTestApp.EntityFrameworkCore.Migrations
 
                     b.Property<string>("GoogleCustomSearchId");
 
+                    b.Property<string>("LatestVersionBranchName")
+                        .HasMaxLength(128);
+
                     b.Property<string>("MainWebsiteUrl");
+
+                    b.Property<string>("MinimumVersion");
 
                     b.Property<string>("Name")
                         .IsRequired()

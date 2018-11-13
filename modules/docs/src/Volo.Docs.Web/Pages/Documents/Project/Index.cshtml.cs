@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volo.Docs.Documents;
 using Volo.Docs.Formatting;
+using Volo.Docs.Models;
 using Volo.Docs.Projects;
 
 namespace Volo.Docs.Pages.Documents.Project
@@ -54,7 +55,7 @@ namespace Volo.Docs.Pages.Documents.Project
 
         public async Task OnGet()
         {
-            var project = await _projectAppService.FindByShortNameAsync(ProjectName);
+            var project = await _projectAppService.GetByShortNameAsync(ProjectName);
 
             SetPageParams(project);
 
@@ -67,7 +68,15 @@ namespace Volo.Docs.Pages.Documents.Project
 
         private async Task SetNavigationAsync()
         {
-            Navigation = await _documentAppService.GetNavigationDocumentAsync(ProjectName, Version, false);
+            try
+            {
+                Navigation = await _documentAppService.GetNavigationDocumentAsync(ProjectName, Version, false);
+            }
+            catch (DocumentNotFoundException) //TODO: What if called on a remote service which may return 404
+            {
+                return;
+            }
+
             Navigation.ConvertItems();
         }
 
@@ -86,14 +95,13 @@ namespace Volo.Docs.Pages.Documents.Project
 
         private async Task SetVersionAsync(ProjectDto project)
         {
-            Versions = (await _documentAppService
-                .GetVersions(project.ShortName, project.DefaultDocumentName, project.ExtraProperties,
-                    project.DocumentStoreType, DocumentNameWithExtension))
-                    .Select(v => new VersionInfo(v.DisplayName, v.Name)).ToList();
+            var versionInfoDtos = await _documentAppService.GetVersions(project.ShortName);
+
+            Versions = versionInfoDtos.Select(v => new VersionInfo(v.DisplayName, v.Name)).ToList();
 
             LatestVersionInfo = GetLatestVersion();
 
-            if (string.Equals(Version, DocsAppConsts.LatestVersion, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(Version, DocsAppConsts.Latest, StringComparison.OrdinalIgnoreCase))
             {
                 LatestVersionInfo.IsSelected = true;
                 Version = LatestVersionInfo.Version;
@@ -116,14 +124,19 @@ namespace Volo.Docs.Pages.Documents.Project
             VersionSelectItems = Versions.Select(v => new SelectListItem
             {
                 Text = v.DisplayText,
-                Value = CreateLink(v.Version, DocumentName),
+                Value = CreateLink(LatestVersionInfo, v.Version, DocumentName),
                 Selected = v.IsSelected
             }).ToList();
         }
 
-        public string CreateLink(string version, string documentName = null)
+        public string CreateLink(VersionInfo latestVersion, string version, string documentName = null)
         {
-            var link = "/" + DocsAppConsts.WebsiteLinkFirstSegment + "/" + ProjectName + "/" + version;
+            if (latestVersion.Version == version)
+            {
+                version = DocsAppConsts.Latest;
+            }
+
+            var link = "/documents/" + ProjectName + "/" + version;
 
             if (documentName != null)
             {
@@ -137,7 +150,7 @@ namespace Volo.Docs.Pages.Documents.Project
         {
             var latestVersion = Versions.First();
 
-            latestVersion.DisplayText = $"{latestVersion.Version} - " + DocsAppConsts.LatestVersion;
+            latestVersion.DisplayText = $"{latestVersion.DisplayText} ({DocsAppConsts.Latest})";
             latestVersion.Version = latestVersion.Version;
 
             return latestVersion;
@@ -145,14 +158,34 @@ namespace Volo.Docs.Pages.Documents.Project
 
         public string GetSpecificVersionOrLatest()
         {
+            if (Document?.Version == null)
+            {
+                return DocsAppConsts.Latest;
+            }
+
             return Document.Version == LatestVersionInfo.Version ?
-                DocsAppConsts.LatestVersion :
+                DocsAppConsts.Latest :
                 Document.Version;
         }
 
         private async Task SetDocumentAsync()
         {
-            Document = await _documentAppService.GetByNameAsync(ProjectName, DocumentNameWithExtension, Version, true);
+            try
+            {
+                if (DocumentNameWithExtension.IsNullOrWhiteSpace())
+                {
+                    Document = await _documentAppService.GetDefaultAsync(ProjectName, Version, true);
+                }
+                else
+                {
+                    Document = await _documentAppService.GetByNameAsync(ProjectName, DocumentNameWithExtension, Version, true);
+                }
+            }
+            catch (DocumentNotFoundException)
+            {
+                return;
+            }
+           
             var converter = _documentConverterFactory.Create(Document.Format ?? ProjectFormat);
 
             var content = converter.NormalizeLinks(Document.Content, Document.Project.ShortName, GetSpecificVersionOrLatest(), Document.LocalDirectory);
@@ -163,5 +196,6 @@ namespace Volo.Docs.Pages.Documents.Project
 
             Document.Content = content;
         }
+
     }
 }

@@ -25,63 +25,78 @@ namespace Volo.Docs.Documents
             _documentStoreFactory = documentStoreFactory;
         }
 
-        public async Task<DocumentWithDetailsDto> GetByNameAsync(string projectShortName, string documentName, string version, bool normalize)
+        public async Task<DocumentWithDetailsDto> GetByNameAsync(
+            string projectShortName, 
+            string documentName, 
+            string version, 
+            bool normalize)
         {
-            var project = await _projectRepository.FindByShortNameAsync(projectShortName);
-
-            return await GetDocument(ObjectMapper.Map<Project, ProjectDto>(project), documentName, version, normalize);
+            var project = await _projectRepository.GetByShortNameAsync(projectShortName);
+            return await GetDocumentWithDetailsDto(
+                project,
+                documentName,
+                version,
+                normalize
+            );
         }
 
-        public async Task<NavigationWithDetailsDto> GetNavigationDocumentAsync(string projectShortName, string version, bool normalize)
+        public async Task<DocumentWithDetailsDto> GetDefaultAsync(
+            string projectShortName, 
+            string version, 
+            bool normalize)
         {
-            var project = await _projectRepository.FindByShortNameAsync(projectShortName);
-
-            return ObjectMapper.Map<DocumentWithDetailsDto, NavigationWithDetailsDto>(
-                await GetDocument(ObjectMapper.Map<Project, ProjectDto>(project), project.NavigationDocumentName,
-                    version, normalize));
+            var project = await _projectRepository.GetByShortNameAsync(projectShortName);
+            return await GetDocumentWithDetailsDto(
+                project,
+                project.DefaultDocumentName,
+                version,
+                normalize
+            );
         }
 
-        public async Task<DocumentWithDetailsDto> GetDocument(ProjectDto project, string documentName, string version, bool normalize)
+        public virtual async Task<NavigationWithDetailsDto> GetNavigationDocumentAsync(
+            string projectShortName, 
+            string version, 
+            bool normalize)
         {
-            if (project == null)
-            {
-                throw new ArgumentNullException(nameof(project));
-            }
+            var project = await _projectRepository.GetByShortNameAsync(projectShortName);
+            var documentDto = await GetDocumentWithDetailsDto(
+                project,
+                project.NavigationDocumentName,
+                version,
+                normalize
+            );
 
-            if (string.IsNullOrWhiteSpace(documentName))
-            {
-                documentName = project.DefaultDocumentName;
-            }
+            return ObjectMapper.Map<DocumentWithDetailsDto, NavigationWithDetailsDto>(documentDto);
+        }
 
-            IDocumentStore documentStore = _documentStoreFactory.Create(project.DocumentStoreType);
-
-            Document document = await documentStore.FindDocumentByNameAsync(project.ExtraProperties, project.Format, documentName, version);
+        protected virtual async Task<DocumentWithDetailsDto> GetDocumentWithDetailsDto(
+            Project project, 
+            string documentName, 
+            string version, 
+            bool normalize)
+        {
+            var documentStore = _documentStoreFactory.Create(project.DocumentStoreType);
+            var document = await documentStore.Find(project, documentName, version);
 
             var dto = ObjectMapper.Map<Document, DocumentWithDetailsDto>(document);
-
-            dto.Project = project;
+            dto.Project = ObjectMapper.Map<Project, ProjectDto>(project);
 
             return dto;
         }
 
-        //TODO: Application service never gets such a parameter: Dictionary<string, object> projectExtraProperties !!!
-        public async Task<List<VersionInfoDto>> GetVersions(string projectShortName, string defaultDocumentName, Dictionary<string, object> projectExtraProperties,
-            string documentStoreType, string documentName)
+        public async Task<List<VersionInfoDto>> GetVersions(string projectShortName)
         {
-            var project = await _projectRepository.FindByShortNameAsync(projectShortName);
+            //TODO: What if there is no version?
 
-            if (string.IsNullOrWhiteSpace(documentName))
-            {
-                documentName = defaultDocumentName;
-            }
+            var project = await _projectRepository.GetByShortNameAsync(projectShortName);
+            var documentStore = _documentStoreFactory.Create(project.DocumentStoreType);
 
-            var documentStore = _documentStoreFactory.Create(documentStoreType);
-
+            //TODO: Why not use GetOrAddAsync
             var versions = await GetVersionsFromCache(projectShortName);
-
             if (versions == null)
             {
-                versions = await documentStore.GetVersions(projectExtraProperties, documentName);
+                versions = await documentStore.GetVersions(project);
                 await SetVersionsToCache(projectShortName, versions);
             }
 
@@ -109,8 +124,14 @@ namespace Volo.Docs.Documents
 
         private async Task SetVersionsToCache(string projectShortName, List<VersionInfoDto> versions)
         {
-            var options = new DistributedCacheEntryOptions() { SlidingExpiration = TimeSpan.FromDays(1) };
-            await _distributedCache.SetAsync(projectShortName, versions, options);
+            await _distributedCache.SetAsync(
+                projectShortName,
+                versions,
+                new DistributedCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromDays(1)
+                }
+            );
         }
     }
 }
