@@ -16,6 +16,9 @@
 <html lang="zh-Hans">
 <head>
     <title>@(ViewBag.Title == null ? "ABP中文网 - ASP.NET Core开源Web应用程序框架 - 中文官网" : ViewBag.Title)</title>
+    <meta name="description" content="Abp框架中国社区">
+    <meta name="keywords" content="ABP,ABP中文网,ABP框架,ABP教程,ABP入门,ABP视频,ABP中文文档,ABP vNext">
+    <meta name="author" content="https://github.com/cnAbp">
     @await Component.InvokeAsync(typeof(StandardMetaViewComponent))
     <abp-style-bundle name="@StandardBundles.Styles.Global" />
     @RenderSection("styles", false)
