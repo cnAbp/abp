@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using Geetest.Core;
 using Geetest.Core.Configuration;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.WebEncoders;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Volo.Abp;
 using Volo.Abp.Account.Web;
@@ -159,6 +162,11 @@ namespace Volo.AbpWebSite
 
         private void ConfigureTheme(IServiceCollection services)
         {
+            services.Configure<WebEncoderOptions>(options => 
+            {
+                options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
+            });
+
             services.Configure<ThemingOptions>(options =>
             {
                 options.Themes.Add<AbpIoTheme>();
