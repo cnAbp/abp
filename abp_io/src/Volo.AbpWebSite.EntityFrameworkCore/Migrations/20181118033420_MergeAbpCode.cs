@@ -3,10 +3,21 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
 {
-    public partial class Module_Changes : Migration
+    public partial class MergeAbpCode : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<string>(
+                name: "LatestVersionBranchName",
+                table: "DocsProjects",
+                maxLength: 128,
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "MinimumVersion",
+                table: "DocsProjects",
+                nullable: true);
+
             migrationBuilder.AddColumn<string>(
                 name: "Name",
                 table: "BlgUsers",
@@ -73,10 +84,36 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                 table: "AbpUsers",
                 maxLength: 64,
                 nullable: true);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsDefault",
+                table: "AbpRoles",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsPublic",
+                table: "AbpRoles",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsStatic",
+                table: "AbpRoles",
+                nullable: false,
+                defaultValue: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "LatestVersionBranchName",
+                table: "DocsProjects");
+
+            migrationBuilder.DropColumn(
+                name: "MinimumVersion",
+                table: "DocsProjects");
+
             migrationBuilder.DropColumn(
                 name: "Name",
                 table: "BlgUsers");
@@ -124,6 +161,18 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
             migrationBuilder.DropColumn(
                 name: "Surname",
                 table: "AbpUsers");
+
+            migrationBuilder.DropColumn(
+                name: "IsDefault",
+                table: "AbpRoles");
+
+            migrationBuilder.DropColumn(
+                name: "IsPublic",
+                table: "AbpRoles");
+
+            migrationBuilder.DropColumn(
+                name: "IsStatic",
+                table: "AbpRoles");
         }
     }
 }

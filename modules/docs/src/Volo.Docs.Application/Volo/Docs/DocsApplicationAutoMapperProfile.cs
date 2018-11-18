@@ -15,6 +15,9 @@ namespace Volo.Docs
 
             CreateMap<DocumentWithDetailsDto, NavigationWithDetailsDto>()
                 .Ignore(x => x.RootNode);
+
+            CreateMap<Document, DocumentDto>();
+            CreateMap<DocumentDto, Document>();
         }
     }
 }

@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.AbpWebSite.EntityFrameworkCore;
@@ -10,16 +9,15 @@ using Volo.AbpWebSite.EntityFrameworkCore;
 namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(AbpWebSiteDbContext))]
-    [Migration("20181031082213_Upgraded_Docs_20181031")]
-    partial class Upgraded_Docs_20181031
+    [Migration("20181118033420_MergeAbpCode")]
+    partial class MergeAbpCode
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Volo.Abp.Identity.IdentityClaimType", b =>
                 {
@@ -56,6 +54,15 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("ConcurrencyStamp");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnName("IsDefault");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnName("IsPublic");
+
+                    b.Property<bool>("IsStatic")
+                        .HasColumnName("IsStatic");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -112,6 +119,14 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                         .HasColumnName("ConcurrencyStamp")
                         .HasMaxLength(256);
 
+                    b.Property<DateTime>("CreationTime");
+
+                    b.Property<Guid?>("CreatorId");
+
+                    b.Property<Guid?>("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime");
+
                     b.Property<string>("Email")
                         .HasColumnName("Email")
                         .HasMaxLength(256);
@@ -124,12 +139,22 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                     b.Property<string>("ExtraProperties")
                         .HasColumnName("ExtraProperties");
 
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId");
+
                     b.Property<bool>("LockoutEnabled")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("LockoutEnabled")
                         .HasDefaultValue(false);
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
+
+                    b.Property<string>("Name")
+                        .HasColumnName("Name")
+                        .HasMaxLength(64);
 
                     b.Property<string>("NormalizedEmail")
                         .HasColumnName("NormalizedEmail")
@@ -157,6 +182,10 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                         .IsRequired()
                         .HasColumnName("SecurityStamp")
                         .HasMaxLength(256);
+
+                    b.Property<string>("Surname")
+                        .HasColumnName("Surname")
+                        .HasMaxLength(64);
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId");
@@ -493,6 +522,8 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<Guid>("BlogId");
+
                     b.Property<DateTime>("CreationTime")
                         .HasColumnName("CreationTime");
 
@@ -550,6 +581,10 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                     b.Property<string>("ExtraProperties")
                         .HasColumnName("ExtraProperties");
 
+                    b.Property<string>("Name")
+                        .HasColumnName("Name")
+                        .HasMaxLength(64);
+
                     b.Property<string>("PhoneNumber")
                         .HasColumnName("PhoneNumber")
                         .HasMaxLength(16);
@@ -558,6 +593,10 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnName("PhoneNumberConfirmed")
                         .HasDefaultValue(false);
+
+                    b.Property<string>("Surname")
+                        .HasColumnName("Surname")
+                        .HasMaxLength(64);
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId");
@@ -617,8 +656,7 @@ namespace Volo.AbpWebSite.EntityFrameworkCore.Migrations
             modelBuilder.Entity("Volo.Utils.SolutionTemplating.DownloadInfo", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("CreationDuration");
 
