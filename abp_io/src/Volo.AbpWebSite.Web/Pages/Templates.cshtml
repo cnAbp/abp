@@ -1,5 +1,6 @@
 ﻿@page
 @using Volo.AbpWebSite
+@using Volo.AbpWebSite.Pages
 @model Volo.AbpWebSite.Pages.TemplatesModel
 @{
     ViewBag.PageTitle = "Get Started";
@@ -52,7 +53,7 @@
                     </p>
                     <div class="form-group">
                         <label for="CompanyAndProjectName">项目名称:</label>
-                        <input class="form-control" name="CompanyAndProjectName" value="@Model.CompanyAndProjectName">
+                        <input class="form-control" name="CompanyAndProjectName" id="CompanyAndProjectName" value="@Model.CompanyAndProjectName" data-regex="^@(TemplatesModel.ProjectNameRegEx)?$">
                         <small class="form-text text-muted">如<i>YourProjectName</i> 或 <i>YourCompanyName.YourProjectName</i>.</small>
                     </div>
 
@@ -115,3 +116,4 @@
 
     </div>
 </div>
+<input hidden id="ProjectRegex" value="@TemplatesModel.ProjectNameRegEx"/>

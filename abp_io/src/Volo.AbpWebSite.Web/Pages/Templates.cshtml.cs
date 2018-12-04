@@ -16,6 +16,7 @@ namespace Volo.AbpWebSite.Pages
         private readonly SolutionBuilder _solutionBuilder;
         private readonly IConfigurationAccessor _configurationAccessor;
         private readonly IGeetestManager _geetestManager;
+        public const string ProjectNameRegEx = @"^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*$";
         public TemplatesModel(SolutionBuilder solutionBuilder, IConfigurationAccessor configurationAccessor, IGeetestManager geetestManager)
         {
             _solutionBuilder = solutionBuilder;

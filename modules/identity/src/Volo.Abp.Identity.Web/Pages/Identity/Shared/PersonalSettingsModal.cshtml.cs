@@ -1,10 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using System.Security.Authentication;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Volo.Abp.AspNetCore.Mvc.UI.RazorPages;
-using Volo.Abp.Identity.Localization;
 
 namespace Volo.Abp.Identity.Web.Pages.Identity.Shared
 {
@@ -12,7 +9,7 @@ namespace Volo.Abp.Identity.Web.Pages.Identity.Shared
     {
         [BindProperty]
         public PersonalSettingsInfoModel PersonalSettingsInfoModel { get; set; }
-
+    
         private readonly IProfileAppService _profileAppService;
 
         public PersonalSettingsModal(IProfileAppService profileAppService)

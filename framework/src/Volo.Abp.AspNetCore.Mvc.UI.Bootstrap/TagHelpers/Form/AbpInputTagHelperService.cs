@@ -120,21 +120,45 @@ namespace Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
             var inputTagHelperOutput = GetInnerTagHelper(GetInputAttributes(context, output), context, tagHelper, "input");
 
             ConvertToTextAreaIfTextArea(inputTagHelperOutput);
-
-            if (TagHelper.IsDisabled && !inputTagHelperOutput.Attributes.ContainsName("disabled"))
-            {
-                inputTagHelperOutput.Attributes.Add("disabled", "true");
-            }
-
-            if (TagHelper.AutoFocus && !inputTagHelperOutput.Attributes.ContainsName("data-auto-focus"))
-            {
-                inputTagHelperOutput.Attributes.Add("data-auto-focus", "true");
-            }
-
+            AddDisabledAttribute(inputTagHelperOutput);
+            AddReadOnlyAttribute(inputTagHelperOutput);
+            AddAutoFocusAttribute(inputTagHelperOutput);
             isCheckbox = IsInputCheckbox(context, output, inputTagHelperOutput.Attributes);
             inputTagHelperOutput.Attributes.AddClass(isCheckbox ? "form-check-input" : "form-control");
 
             return inputTagHelperOutput;
+        }
+
+        protected virtual void AddAutoFocusAttribute(TagHelperOutput inputTagHelperOutput)
+        {
+            if (TagHelper.AutoFocus && !inputTagHelperOutput.Attributes.ContainsName("data-auto-focus"))
+            {
+                inputTagHelperOutput.Attributes.Add("data-auto-focus", "true");
+            }
+        }
+
+        protected virtual void AddDisabledAttribute(TagHelperOutput inputTagHelperOutput)
+        {
+            if (inputTagHelperOutput.Attributes.ContainsName("disabled"))
+            {
+                return;
+            }
+            else if (TagHelper.IsDisabled || GetAttribute<DisabledInput>(TagHelper.AspFor.ModelExplorer) != null)
+            {
+                inputTagHelperOutput.Attributes.Add("disabled", "");
+            }
+        }
+
+        protected virtual void AddReadOnlyAttribute(TagHelperOutput inputTagHelperOutput)
+        {
+            if (inputTagHelperOutput.Attributes.ContainsName("readonly"))
+            {
+                return;
+            }
+            else if (TagHelper.IsReadonly || GetAttribute<ReadOnlyInput>(TagHelper.AspFor.ModelExplorer) != null)
+            {
+                inputTagHelperOutput.Attributes.Add("readonly", "");
+            }
         }
 
         protected virtual bool IsInputCheckbox(TagHelperContext context, TagHelperOutput output, TagHelperAttributeList attributes)
@@ -226,7 +250,7 @@ namespace Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
             foreach (var tagHelperAttribute in tagHelperAttributes)
             {
                 var nameWithoutPrefix = tagHelperAttribute.Name.Substring(groupPrefix.Length);
-                var newAttritube = new TagHelperAttribute(nameWithoutPrefix,tagHelperAttribute.Value);
+                var newAttritube = new TagHelperAttribute(nameWithoutPrefix, tagHelperAttribute.Value);
                 output.Attributes.Add(newAttritube);
             }
         }
