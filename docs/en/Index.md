@@ -1,7 +1,5 @@
 ﻿# ABP Documentation
 
-## Table of Contents
-
 * Getting Started
   * From Startup Templates
     * [ASP.NET Core MVC Template](Getting-Started-AspNetCore-MVC-Template.md)
@@ -13,7 +11,7 @@
     * [With ASP.NET Core MVC](Tutorials/AspNetCore-Mvc/Part-I.md)
 * Fundamentals
   * [Dependency Injection](Dependency-Injection.md)
-    * AutoFac Integration
+    * [AutoFac Integration](Autofac-Integration.md)
   * [Virtual File System](Virtual-File-System.md)
   * [Localization](Localization.md)
   * [Exception Handling](Exception-Handling.md)
@@ -61,4 +59,6 @@
 * Data Access
   * [Entity Framework Core Integration](Entity-Framework-Core.md)
   * [MongoDB Integration](MongoDB.md)
+* Background
+  * [Background Jobs](Background-Jobs.md)
 * Testing

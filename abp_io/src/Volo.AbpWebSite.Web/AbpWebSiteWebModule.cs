@@ -73,6 +73,7 @@ namespace Volo.AbpWebSite
             var hostingEnvironment = context.Services.GetHostingEnvironment();
             var configuration = context.Services.GetConfiguration();
 
+            ConfigureLanguages(context.Services);
             ConfigureDatabaseServices(context.Services, configuration);
             ConfigureVirtualFileSystem(context.Services, hostingEnvironment);
             ConfigureBundles(context.Services);
@@ -90,6 +91,14 @@ namespace Volo.AbpWebSite
                     Id = configuration["Captcha:Geetest:Id"],
                     Key = configuration["Captcha:Geetest:Key"]
                 });
+        }
+
+        private static void ConfigureLanguages(IServiceCollection services)
+        {
+            services.Configure<AbpLocalizationOptions>(options =>
+            {
+                options.Languages.Add(new LanguageInfo("en-US", "en-US", "English"));
+            });
         }
 
         private static void ConfigureBundles(IServiceCollection services)
@@ -179,14 +188,7 @@ namespace Volo.AbpWebSite
             var app = context.GetApplicationBuilder();
             var env = context.GetEnvironment();
 
-            app.ApplicationServices.GetService<AbpWebSiteDbContext>().Database.Migrate();
-
-            app.UseRequestLocalization(options =>
-            {
-                options.DefaultRequestCulture = new RequestCulture("zh-Hans", "zh-Hans");
-                options.AddSupportedCultures("zh-Hans");
-                options.AddSupportedUICultures("zh-Hans");
-            });
+            app.UseAbpRequestLocalization();
 
             if (env.IsDevelopment())
             {

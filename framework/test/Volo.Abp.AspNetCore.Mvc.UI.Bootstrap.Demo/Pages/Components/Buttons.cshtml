@@ -48,6 +48,33 @@
 <h4># Example</h4>
 
 <div class="demo-with-code">
+    <div class="demo-area">
+        <abp-button button-type="Outline_Primary">Primary</abp-button>
+        <abp-button button-type="Outline_Secondary">Secondary</abp-button>
+        <abp-button button-type="Outline_Success">Success</abp-button>
+        <abp-button button-type="Outline_Danger">Danger</abp-button>
+        <abp-button button-type="Outline_Warning">Warning</abp-button>
+        <abp-button button-type="Outline_Info">Info</abp-button>
+        <abp-button button-type="Outline_Light">Light</abp-button>
+        <abp-button button-type="Outline_Dark">Dark</abp-button>
+    </div>
+    <div class="code-area">
+        <pre>
+&lt;abp-button button-type="Outline_Primary"&gt;Primary&lt;/abp-button&gt;
+&lt;abp-button button-type="Outline_Secondary"&gt;Secondary&lt;/abp-button&gt;
+&lt;abp-button button-type="Outline_Success"&gt;Success&lt;/abp-button&gt;
+&lt;abp-button button-type="Outline_Danger"&gt;Danger&lt;/abp-button&gt;
+&lt;abp-button button-type="Outline_Warning"&gt;Warning&lt;/abp-button&gt;
+&lt;abp-button button-type="Outline_Info"&gt;Info&lt;/abp-button&gt;
+&lt;abp-button button-type="Outline_Light"&gt;Light&lt;/abp-button&gt;
+&lt;abp-button button-type="Outline_Dark"&gt;Dark&lt;/abp-button&gt;
+</pre>
+    </div>
+</div>
+
+<h4># Example</h4>
+
+<div class="demo-with-code">
     <div class="demo-area" style="margin: 35px;">
         <a abp-button="Primary" href="#">Link</a>
         <abp-button button-type="Primary" type="submit" text="Button" />
@@ -70,13 +97,31 @@
 
 <div class="demo-with-code">
     <div class="demo-area">
-        <abp-button size="Large" text="Large" />
+        <abp-button size="Default" text="Default" />
         <abp-button size="Small" text="Small" />
+        <abp-button size="Medium" text="Medium" />
+        <abp-button size="Large" text="Large" />
     </div>
     <div class="code-area">
         <pre>
-&lt;abp-button size=&quot;Large&quot; text=&quot;Large&quot;/&gt;
-&lt;abp-button size=&quot;Small&quot; text=&quot;Small&quot;/&gt;
+&lt;abp-button size=&quot;Default&quot; text=&quot;Default&quot; /&gt;
+&lt;abp-button size=&quot;Small&quot; text=&quot;Small&quot; /&gt;
+&lt;abp-button size=&quot;Medium&quot; text=&quot;Medium&quot; /&gt;
+&lt;abp-button size=&quot;Large&quot; text=&quot;Large&quot; /&gt;
+</pre>
+    </div>
+</div>
+
+<h4># Example</h4>
+
+
+<div class="demo-with-code">
+    <div class="demo-area">
+        <abp-button block="true" text="Block" />
+    </div>
+    <div class="code-area">
+        <pre>
+&lt;abp-button block=&quot;true&quot; text=&quot;Block&quot; /&gt;
 </pre>
     </div>
 </div>
@@ -103,6 +148,53 @@
     <div class="code-area">
         <pre>
 &lt;abp-button text=&quot;Busy&quot; busy-text=&quot;Saving...&quot;/&gt;
+</pre>
+    </div>
+</div>
+
+<h4># Group Examples</h4>
+
+<div class="demo-with-code">
+    <div class="demo-area">
+
+        <abp-button-group>
+            <abp-button>Left</abp-button>
+            <abp-button>Middle</abp-button>
+            <abp-button>Right</abp-button>
+        </abp-button-group>
+
+        <abp-button-group size="Large">
+            <abp-button button-type="Primary">Primary</abp-button>
+            <abp-button button-type="Secondary">Secondary</abp-button>
+            <abp-button button-type="Success">Success</abp-button>
+        </abp-button-group>
+
+        <abp-button-group direction="Vertical" size="Small">
+            <abp-button button-type="Primary">Top</abp-button>
+            <abp-button button-type="Warning">Middle</abp-button>
+            <abp-button button-type="Danger">Bottom</abp-button>
+        </abp-button-group>
+    </div>
+    <div class="code-area">
+        <pre>
+
+&lt;abp-button-group&gt;
+    &lt;abp-button&gt; Left &lt;/abp-button&gt;
+    &lt;abp-button&gt; Middle &lt;/abp-button&gt;
+    &lt;abp-button&gt; Right &lt;/abp-button&gt;
+&lt;/abp-button-group&gt;
+
+&lt;abp-button-group size=&quot;Large&quot;&gt;
+    &lt;abp-button button-type=&quot;Primary&quot;&gt; Primary &lt;/abp-button&gt;
+    &lt;abp-button button-type=&quot;Secondary&quot;&gt; Secondary &lt;/abp-button&gt;
+    &lt;abp-button button-type=&quot;Success&quot;&gt; Success &lt;/abp-button&gt;
+&lt;/abp-button-group&gt;
+
+&lt;abp-button-group direction=&quot;Vertical&quot; size=&quot;Small&quot;&gt;
+    &lt;abp-button button-type=&quot;Primary&quot;&gt; Top &lt;/abp-button&gt;
+    &lt;abp-button button-type=&quot;Warning&quot;&gt; Middle &lt;/abp-button&gt;
+    &lt;abp-button button-type=&quot;Danger&quot;&gt; Bottom &lt;/abp-button&gt;
+&lt;/abp-button-group&gt;
 </pre>
     </div>
 </div>
