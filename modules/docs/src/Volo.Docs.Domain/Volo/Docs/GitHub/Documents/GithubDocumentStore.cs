@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
 using Octokit;
 using Octokit.Internal;
+using Volo.Abp.Caching;
 using Volo.Abp.Domain.Services;
 using Volo.Docs.Documents;
 using Volo.Docs.GitHub.Projects;
@@ -19,6 +22,21 @@ namespace Volo.Docs.GitHub.Documents
 
     public class GithubDocumentStore : DomainService, IDocumentStore
     {
+        private readonly IDistributedCache<List<VersionInfo>> _versionInfoDistributedCache;
+        private readonly IDistributedCache<string> _githubStringContentDistributedCache;
+        private readonly IDistributedCache<byte[]> _githubByteContentDistributedCache;
+        private readonly AsyncLock _asyncLock = new AsyncLock();
+
+        public GithubDocumentStore(
+            IDistributedCache<List<VersionInfo>> versionInfoDistributedCache, 
+            IDistributedCache<string> githubStringContentDistributedCache, 
+            IDistributedCache<byte[]> githubByteContentDistributedCache)
+        {
+            _versionInfoDistributedCache = versionInfoDistributedCache;
+            _githubStringContentDistributedCache = githubStringContentDistributedCache;
+            _githubByteContentDistributedCache = githubByteContentDistributedCache;
+        }
+
         public const string Type = "GitHub";
 
         public virtual async Task<Document> GetDocument(Project project, string documentName, string version)
@@ -59,21 +77,45 @@ namespace Volo.Docs.GitHub.Documents
 
         public async Task<List<VersionInfo>> GetVersions(Project project)
         {
-            try
+            using (await _asyncLock.LockAsync())
             {
-                return (await GetReleasesAsync(project))
-                    .OrderByDescending(r => r.PublishedAt)
-                    .Select(r => new VersionInfo
+                var versionInfoCacheKey = project.Id.ToString("N");
+
+                var versionInfoCache = await _versionInfoDistributedCache.GetAsync(versionInfoCacheKey);
+                if (versionInfoCache != null)
+                {
+                    return versionInfoCache;
+                }
+
+                try
+                {
+                    var versions = (await GetReleasesAsync(project))
+                        .OrderByDescending(r => r.PublishedAt)
+                        .Select(r => new VersionInfo
+                        {
+                            Name = r.TagName,
+                            DisplayName = r.TagName
+                        }).ToList();
+                    versions.Insert(0, new VersionInfo
                     {
-                        Name = r.TagName,
-                        DisplayName = r.TagName
-                    }).ToList();
-            }
-            catch (Exception ex)
-            {
-                //TODO: It may not be a good idea to hide the error!
-                Logger.LogError(ex.Message, ex);
-                return new List<VersionInfo>();
+                        Name = "master",
+                        DisplayName = "master"
+                    });
+
+                    await _versionInfoDistributedCache.SetAsync(versionInfoCacheKey, versions,
+                        new DistributedCacheEntryOptions
+                        {
+                            SlidingExpiration = TimeSpan.FromDays(1)
+                        });
+
+                    return versions;
+                }
+                catch (Exception ex)
+                {
+                    //TODO: It may not be a good idea to hide the error!
+                    Logger.LogError(ex.Message, ex);
+                    return new List<VersionInfo>();
+                }
             }
         }
 
@@ -138,45 +180,83 @@ namespace Volo.Docs.GitHub.Documents
 
         private async Task<string> DownloadWebContentAsync(string rawUrl, string token)
         {
-            try
+            using (await _asyncLock.LockAsync())
             {
-                using (var webClient = new WebClient())
-                {
-                    if (!token.IsNullOrWhiteSpace())
-                    {
-                        webClient.Headers.Add("Authorization", "token " + token);
-                    }
+                var githubContentCacheKey = rawUrl;
 
-                    return await webClient.DownloadStringTaskAsync(new Uri(rawUrl));
+                var githubContentCache = await _githubStringContentDistributedCache.GetAsync(githubContentCacheKey);
+                if (githubContentCache != null)
+                {
+                    return githubContentCache;
                 }
-            }
-            catch (Exception ex)
-            {
-                //TODO: Only handle when document is really not available
-                Logger.LogWarning(ex.Message, ex);
-                throw new DocumentNotFoundException(rawUrl);
+
+                try
+                {
+                    using (var webClient = new WebClient())
+                    {
+                        if (!token.IsNullOrWhiteSpace())
+                        {
+                            webClient.Headers.Add("Authorization", "token " + token);
+                        }
+
+                        var content = await webClient.DownloadStringTaskAsync(new Uri(rawUrl));
+
+                        await _githubStringContentDistributedCache.SetAsync(githubContentCacheKey, content,
+                            new DistributedCacheEntryOptions
+                            {
+                                SlidingExpiration = TimeSpan.FromDays(1)
+                            });
+
+                        return content;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //TODO: Only handle when document is really not available
+                    Logger.LogWarning(ex.Message, ex);
+                    throw new DocumentNotFoundException(rawUrl);
+                }
             }
         }
 
         private async Task<byte[]> DownloadWebContentAsByteArrayAsync(string rawUrl, string token)
         {
-            try
+            using (await _asyncLock.LockAsync())
             {
-                using (var webClient = new WebClient())
-                {
-                    if (!token.IsNullOrWhiteSpace())
-                    {
-                        webClient.Headers.Add("Authorization", "token " + token);
-                    }
+                var githubContentCacheKey = rawUrl;
 
-                    return await webClient.DownloadDataTaskAsync(new Uri(rawUrl));
+                var githubContentCache = await _githubByteContentDistributedCache.GetAsync(githubContentCacheKey);
+                if (githubContentCache != null)
+                {
+                    return githubContentCache;
                 }
-            }
-            catch (Exception ex)
-            {
-                //TODO: Only handle when resource is really not available
-                Logger.LogWarning(ex.Message, ex);
-                throw new ResourceNotFoundException(rawUrl);
+
+                try
+                {
+                    using (var webClient = new WebClient())
+                    {
+                        if (!token.IsNullOrWhiteSpace())
+                        {
+                            webClient.Headers.Add("Authorization", "token " + token);
+                        }
+
+                        var content = await webClient.DownloadDataTaskAsync(new Uri(rawUrl));
+
+                        await _githubByteContentDistributedCache.SetAsync(githubContentCacheKey, content,
+                            new DistributedCacheEntryOptions
+                            {
+                                SlidingExpiration = TimeSpan.FromDays(1)
+                            });
+
+                        return content;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //TODO: Only handle when resource is really not available
+                    Logger.LogWarning(ex.Message, ex);
+                    throw new ResourceNotFoundException(rawUrl);
+                }
             }
         }
     }

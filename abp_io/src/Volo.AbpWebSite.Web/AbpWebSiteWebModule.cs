@@ -97,7 +97,7 @@ namespace Volo.AbpWebSite
         {
             services.Configure<AbpLocalizationOptions>(options =>
             {
-                options.Languages.Add(new LanguageInfo("en-US", "en-US", "English"));
+                options.Languages.Add(new LanguageInfo("zh-Hans", "zh-Hans", "简体中文"));
             });
         }
 
@@ -188,6 +188,8 @@ namespace Volo.AbpWebSite
             var app = context.GetApplicationBuilder();
             var env = context.GetEnvironment();
 
+            app.ApplicationServices.GetService<AbpWebSiteDbContext>().Database.Migrate();
+            
             app.UseAbpRequestLocalization();
 
             if (env.IsDevelopment())

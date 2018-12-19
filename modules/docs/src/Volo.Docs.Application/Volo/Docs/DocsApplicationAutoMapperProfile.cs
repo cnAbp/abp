@@ -13,12 +13,6 @@ namespace Volo.Docs
             CreateMap<VersionInfo, VersionInfoDto>();
             CreateMap<Document, DocumentWithDetailsDto>()
                 .Ignore(x => x.Project);
-
-            CreateMap<DocumentWithDetailsDto, NavigationWithDetailsDto>()
-                .Ignore(x => x.RootNode);
-
-            CreateMap<Document, DocumentDto>();
-            CreateMap<DocumentDto, Document>();
             CreateMap<DocumentResource, DocumentResourceDto>();
         }
     }
