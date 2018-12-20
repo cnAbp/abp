@@ -34,6 +34,7 @@ using Volo.Abp.Identity;
 using Volo.Abp.Identity.Web;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
+using Volo.Abp.Settings;
 using Volo.Abp.Threading;
 using Volo.Abp.UI;
 using Volo.Abp.UI.Navigation;
@@ -189,10 +190,14 @@ namespace Volo.AbpWebSite
             var env = context.GetEnvironment();
 
             app.ApplicationServices.GetService<AbpWebSiteDbContext>().Database.Migrate();
+
+            AsyncHelper.RunSync(() => app.ApplicationServices.GetService<DefaultValueSettingValueProvider>()
+                .SetAsync(app.ApplicationServices.GetService<ISettingDefinitionManager>()
+                    .Get(LocalizationSettingNames.DefaultLanguage), "zh-Hans", null));
             
             app.UseAbpRequestLocalization();
 
-            if (env.IsDevelopment())
+            if (env.IsDevelopment()) 
             {
                 app.UseDeveloperExceptionPage();
             }
