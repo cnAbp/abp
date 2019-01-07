@@ -94,11 +94,7 @@ namespace Volo.Utils.SolutionTemplating.Building.Steps
 
             private string ConvertToNugetReference(string oldValue)
             {
-                var directory = new DirectoryInfo(oldValue);
-
-                var newValue = directory.Name.Replace(".csproj", "");
-
-                return newValue;
+                return oldValue.Split('\\').Last().Replace(".csproj", "");
             }
 
             private static Stream GenerateStreamFromString(string s)
