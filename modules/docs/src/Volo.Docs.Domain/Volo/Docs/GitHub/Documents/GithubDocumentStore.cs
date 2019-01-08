@@ -13,12 +13,13 @@ using Volo.Abp.Domain.Services;
 using Volo.Docs.Documents;
 using Volo.Docs.GitHub.Projects;
 using Volo.Docs.Projects;
+using Newtonsoft.Json.Linq;
 using ProductHeaderValue = Octokit.ProductHeaderValue;
 using Project = Volo.Docs.Projects.Project;
 
 namespace Volo.Docs.GitHub.Documents
 {
-    //TODO: Needs refactoring
+    //TODO: Needs more refactoring
 
     public class GithubDocumentStore : DomainService, IDocumentStore
     {
@@ -41,9 +42,11 @@ namespace Volo.Docs.GitHub.Documents
 
         public virtual async Task<Document> GetDocument(Project project, string documentName, string version)
         {
+            var token = project.GetGitHubAccessTokenOrNull();
             var rootUrl = project.GetGitHubUrl(version);
             var rawRootUrl = CalculateRawRootUrl(rootUrl);
             var rawDocumentUrl = rawRootUrl + documentName;
+            var commitHistoryUrl = project.GetGitHubUrlForCommitHistory() + documentName;
             var editLink = rootUrl.ReplaceFirst("/tree/", "/blob/") + documentName;
             var localDirectory = "";
             var fileName = documentName;
@@ -63,16 +66,10 @@ namespace Volo.Docs.GitHub.Documents
                 Format = project.Format,
                 LocalDirectory = localDirectory,
                 FileName = fileName,
+                Contributors = await GetContributors(commitHistoryUrl, token),
                 Version = version,
-                Content = await DownloadWebContentAsync(rawDocumentUrl, project.GetGitHubAccessTokenOrNull())
+                Content = await DownloadWebContentAsStringAsync(rawDocumentUrl, token)
             };
-        }
-
-        private static string CalculateRawRootUrl(string rootUrl)
-        {
-            return rootUrl
-                .Replace("github.com", "raw.githubusercontent.com")
-                .ReplaceFirst("/tree/", "/");
         }
 
         public async Task<List<VersionInfo>> GetVersions(Project project)
@@ -178,7 +175,7 @@ namespace Volo.Docs.GitHub.Documents
             }
         }
 
-        private async Task<string> DownloadWebContentAsync(string rawUrl, string token)
+        private async Task<string> DownloadWebContentAsStringAsync(string rawUrl, string token)
         {
             using (await _asyncLock.LockAsync())
             {
@@ -209,6 +206,7 @@ namespace Volo.Docs.GitHub.Documents
 
                         return content;
                     }
+                    webClient.Headers.Add("User-Agent", "request");
                 }
                 catch (Exception ex)
                 {
@@ -258,6 +256,49 @@ namespace Volo.Docs.GitHub.Documents
                     throw new ResourceNotFoundException(rawUrl);
                 }
             }
+        }
+
+        private async Task<List<DocumentContributor>> GetContributors(string url, string token)
+        {
+            var contributors = new List<DocumentContributor>();
+
+            try
+            {
+                var commitsJsonAsString = await DownloadWebContentAsStringAsync(url, token);
+
+                var commits = JArray.Parse(commitsJsonAsString);
+
+                foreach (var commit in commits)
+                {
+                    var author = commit["author"];
+
+                    if (contributors.All(c => c.Username != (string) author["login"]))
+                    {
+                        contributors.Add(new DocumentContributor
+                        {
+                            Username = (string)author["login"],
+                            UserProfileUrl = (string)author["html_url"],
+                            AvatarUrl = (string)author["avatar_url"]
+                        });
+                    }
+                }
+
+                contributors.Reverse();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex.Message);
+            }
+
+
+            return contributors;
+        }
+
+        private static string CalculateRawRootUrl(string rootUrl)
+        {
+            return rootUrl
+                .Replace("github.com", "raw.githubusercontent.com")
+                .ReplaceFirst("/tree/", "/");
         }
     }
 }

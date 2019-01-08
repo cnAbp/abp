@@ -163,9 +163,14 @@ namespace Volo.Abp.IdentityServer.Clients
             ClientSecrets.Add(new ClientSecret(Id, value, expiration, type, description));
         }
 
-        public virtual void RemoveAllSecrets()
+        public virtual void RemoveSecret([NotNull] string value, string type = IdentityServerConstants.SecretTypes.SharedSecret)
         {
-            ClientSecrets.Clear();
+            ClientSecrets.RemoveAll(s => s.Value == value && s.Type == type);
+        }
+
+        public virtual ClientSecret FindSecret([NotNull] string value, string type = IdentityServerConstants.SecretTypes.SharedSecret)
+        {
+            return ClientSecrets.FirstOrDefault(s => s.Type == type && s.Value == value);
         }
 
         public virtual void AddScope([NotNull] string scope)

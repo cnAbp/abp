@@ -24,9 +24,15 @@ namespace Acme.BookStore.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken();
+
                     b.Property<DateTime>("CreationTime");
 
                     b.Property<Guid?>("CreatorId");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties");
 
                     b.Property<DateTime?>("LastModificationTime");
 
@@ -52,8 +58,17 @@ namespace Acme.BookStore.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasMaxLength(256);
+
                     b.Property<string>("Description")
                         .HasMaxLength(256);
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties");
 
                     b.Property<bool>("IsStatic");
 
@@ -81,7 +96,14 @@ namespace Acme.BookStore.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ConcurrencyStamp");
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasColumnName("ConcurrencyStamp")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnName("ExtraProperties");
 
                     b.Property<bool>("IsDefault")
                         .HasColumnName("IsDefault");
@@ -143,6 +165,7 @@ namespace Acme.BookStore.Migrations
                         .HasDefaultValue(0);
 
                     b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
                         .IsRequired()
                         .HasColumnName("ConcurrencyStamp")
                         .HasMaxLength(256);

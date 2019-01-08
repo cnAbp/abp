@@ -37,7 +37,6 @@ using Volo.Abp.Modularity;
 using Volo.Abp.Settings;
 using Volo.Abp.Threading;
 using Volo.Abp.UI;
-using Volo.Abp.UI.Navigation;
 using Volo.Abp.VirtualFileSystem;
 using Volo.AbpWebSite.Bundling;
 using Volo.AbpWebSite.EntityFrameworkCore;
@@ -61,14 +60,6 @@ namespace Volo.AbpWebSite
         )]
     public class AbpWebSiteWebModule : AbpModule
     {
-        public override void PreConfigureServices(ServiceConfigurationContext context)
-        {
-            context.Services.PreConfigure<AbpAspNetCoreConfigurationOptions>(options =>
-            {
-                options.UserSecretsAssembly = typeof(AbpWebSiteWebModule).Assembly;
-            });
-        }
-
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
             var hostingEnvironment = context.Services.GetHostingEnvironment();
