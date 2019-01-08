@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/Volo.AbpWebSite.Web/bin/Debug/netcoreapp2.1/Volo.AbpWebSite.Web.dll",
+            "program": "${workspaceFolder}/src/Volo.AbpWebSite.Web/bin/Debug/netcoreapp2.2/Volo.AbpWebSite.Web.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Volo.AbpWebSite.Web",
             "stopAtEntry": false,
