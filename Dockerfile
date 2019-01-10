@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-aspnetcore-runtime AS base
+FROM microsoft/dotnet:2.2-aspnetcore-runtime AS base
 
 # install System.Drawing native dependencies
 RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && echo "deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib\
@@ -17,7 +17,7 @@ RUN apt-get update \
         libx11-dev \
      && rm -rf /var/lib/apt/lists/*
 
-FROM microsoft/dotnet:2.1-sdk AS build
+FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /build
 
 COPY ["framework", "framework"]

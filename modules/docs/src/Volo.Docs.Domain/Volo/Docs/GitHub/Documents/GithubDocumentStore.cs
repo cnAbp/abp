@@ -195,6 +195,7 @@ namespace Volo.Docs.GitHub.Documents
                         {
                             webClient.Headers.Add("Authorization", "token " + token);
                         }
+                        webClient.Headers.Add("User-Agent", "request");
 
                         var content = await webClient.DownloadStringTaskAsync(new Uri(rawUrl));
 
@@ -206,7 +207,6 @@ namespace Volo.Docs.GitHub.Documents
 
                         return content;
                     }
-                    webClient.Headers.Add("User-Agent", "request");
                 }
                 catch (Exception ex)
                 {

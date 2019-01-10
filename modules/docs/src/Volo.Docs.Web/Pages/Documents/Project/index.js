@@ -86,15 +86,23 @@
                 'https://twitter.com/intent/tweet?text=' + encodeURI(pageHeader + " | " + projectName + " | " + window.location.href)
             );
 
-            $('#LinkedinShareLink').attr('href',
-                'https://www.linkedin.com/shareArticle?'
+            $('#WeiboShareLink').attr('href',
+                'https://service.weibo.com/share/share.php?'
                 + 'url=' + encodeURI(window.location.href) + '&'
-                + 'mini=true&'
-                + "summary=" + encodeURI(projectName) + '&'
-                + "title=" + encodeURI(pageHeader) + '&'
-                + "source=" + encodeURI($('#GoToMainWebSite').attr('href'))
+                + "title=" + encodeURI(pageHeader + ' - ABP中文网 https://cn.abp.io/')
             );
 
+            $('#WechatShareLink').tooltip({
+                html:true,
+                title:"<div id='WechatQRCode'>微信扫一扫分享</div>"
+            }).on('shown.bs.tooltip', function () {
+                new QRCode(document.getElementById("WechatQRCode"), {
+                    text: encodeURI(window.location.href),
+                    width: 128,
+                    height: 128
+                });
+            });
+            
             $('#EmailShareLink').attr('href',
                 'mailto:?'
                 + 'body=' + encodeURI('I want you to look at ' + window.location.href) + '&'
