@@ -102,12 +102,6 @@
                     height: 128
                 });
             });
-            
-            $('#EmailShareLink').attr('href',
-                'mailto:?'
-                + 'body=' + encodeURI('I want you to look at ' + window.location.href) + '&'
-                + "subject=" + encodeURI(pageHeader + ' | ' + projectName) + '&'
-            );
         };
 
         initNavigationFilter("sidebar-scroll");
