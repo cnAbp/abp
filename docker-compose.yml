@@ -2,7 +2,7 @@ version: "3"
 services:
   cn.abp.io:
     container_name: cn.abp.io
-    image: cnabp/cn.abp.io:5.4
+    image: cnabp/cn.abp.io:5.5
     depends_on:
       - cn.abp.io.mysql
     restart: always
