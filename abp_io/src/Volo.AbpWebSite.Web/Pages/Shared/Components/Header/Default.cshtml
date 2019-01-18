@@ -38,11 +38,11 @@
             <div class="form-inline my-2 my-lg-0">
                 @if (CurrentUser.IsAuthenticated)
                 {
-                    <a class="btn btn-logout" href="/Account/Logout">登陆为 (@CurrentUser.UserName)</a>
+                    <a class="btn btn-logout" href="/Account/Logout">(@CurrentUser.UserName)</a>
                 }
                 else
                 {
-                    <a class="btn btn-login" href="/Account/Logout">登陆</a>
+                    <a class="btn btn-login" href="/Account/Logout">登录</a>
                 }
                 <a class="btn my-2 my-sm-0 text-success" href="/Templates">
                     <span class="for-desktop">入门</span>
