@@ -1,15 +1,21 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 using Swashbuckle.AspNetCore.Swagger;
 using Volo.Abp;
+using Volo.Abp.Auditing;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.Autofac;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore.SqlServer;
 using Volo.Abp.EventBus.RabbitMq;
 using Volo.Abp.Guids;
+using Volo.Abp.Http.Client.IdentityModel;
+using Volo.Abp.Identity;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
@@ -18,6 +24,7 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.Threading;
 using Volo.Blogging;
 using Volo.Blogging.Blogs;
+using Volo.Blogging.Files;
 using Volo.Blogging.MongoDB;
 
 namespace BloggingService.Host
@@ -31,13 +38,16 @@ namespace BloggingService.Host
         typeof(AbpSettingManagementEntityFrameworkCoreModule),
         typeof(BloggingHttpApiModule),
         typeof(BloggingMongoDbModule),
-        typeof(BloggingApplicationModule)
+        typeof(BloggingApplicationModule),
+        typeof(AbpHttpClientIdentityModelModule),
+        typeof(AbpIdentityHttpApiClientModule)
         )]
     public class BloggingServiceHostModule : AbpModule
     {
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
             var configuration = context.Services.GetConfiguration();
+            var hostingEnvironment = context.Services.GetHostingEnvironment();
 
             context.Services.AddAuthentication("Bearer")
                 .AddIdentityServerAuthentication(options =>
@@ -72,16 +82,33 @@ namespace BloggingService.Host
                 options.UseSqlServer();
             });
 
+            Configure<BlogFileOptions>(options =>
+            {
+                options.FileUploadLocalFolder = Path.Combine(hostingEnvironment.WebRootPath, "files");
+                options.FileUploadUrlRoot = "/files/";
+            });
+
             context.Services.AddDistributedRedisCache(options =>
             {
                 options.Configuration = configuration["Redis:Configuration"];
             });
+
+            Configure<AbpAuditingOptions>(options =>
+            {
+                options.IsEnabledForGetRequests = true;
+                options.ApplicationName = "BloggingService";
+            });
+
+            var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"]);
+            context.Services.AddDataProtection()
+                .PersistKeysToStackExchangeRedis(redis, "MsDemo-DataProtection-Keys");
         }
 
         public override void OnApplicationInitialization(ApplicationInitializationContext context)
         {
             var app = context.GetApplicationBuilder();
 
+            app.UseCorrelationId();
             app.UseVirtualFiles();
             app.UseAuthentication();
             app.UseAbpRequestLocalization(); //TODO: localization?

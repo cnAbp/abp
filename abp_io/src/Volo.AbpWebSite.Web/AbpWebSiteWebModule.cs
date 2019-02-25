@@ -43,6 +43,7 @@ using Volo.Abp.VirtualFileSystem;
 using Volo.AbpWebSite.Bundling;
 using Volo.AbpWebSite.EntityFrameworkCore;
 using Volo.Blogging;
+using Volo.Blogging.Files;
 using Volo.Docs;
 
 namespace Volo.AbpWebSite
@@ -87,19 +88,30 @@ namespace Volo.AbpWebSite
                     Id = configuration["Captcha:Geetest:Id"],
                     Key = configuration["Captcha:Geetest:Key"]
                 });
+
+            ConfigureBlogging(hostingEnvironment);
         }
 
-        private static void ConfigureLanguages(IServiceCollection services)
+        private void ConfigureBlogging(IHostingEnvironment hostingEnvironment)
         {
-            services.Configure<AbpLocalizationOptions>(options =>
+            Configure<BlogFileOptions>(options =>
+            {
+                options.FileUploadLocalFolder = Path.Combine(hostingEnvironment.WebRootPath, "files");
+                options.FileUploadUrlRoot = "/files/";
+            });
+        }
+
+        private void ConfigureLanguages()
+        {
+            Configure<AbpLocalizationOptions>(options =>
             {
                 options.Languages.Add(new LanguageInfo("zh-Hans", "zh-Hans", "简体中文"));
             });
         }
 
-        private static void ConfigureBundles(IServiceCollection services)
+        private void ConfigureBundles()
         {
-            services.Configure<BundlingOptions>(options =>
+            Configure<BundlingOptions>(options =>
             {
                 options
                     .StyleBundles
@@ -122,14 +134,14 @@ namespace Volo.AbpWebSite
             });
         }
 
-        private static void ConfigureDatabaseServices(IServiceCollection services, IConfigurationRoot configuration)
+        private void ConfigureDatabaseServices(IConfigurationRoot configuration)
         {
-            services.Configure<DbConnectionOptions>(options =>
+            Configure<DbConnectionOptions>(options =>
             {
                 options.ConnectionStrings.Default = configuration.GetConnectionString("Default");
             });
 
-            services.Configure<AbpDbContextOptions>(options =>
+            Configure<AbpDbContextOptions>(options =>
             {
                 options.Configure(context =>
                 {
@@ -147,11 +159,11 @@ namespace Volo.AbpWebSite
             });
         }
 
-        private static void ConfigureVirtualFileSystem(IServiceCollection services, IHostingEnvironment hostingEnvironment)
+        private void ConfigureVirtualFileSystem(IHostingEnvironment hostingEnvironment)
         {
             if (hostingEnvironment.IsDevelopment())
             {
-                services.Configure<VirtualFileSystemOptions>(options =>
+                Configure<VirtualFileSystemOptions>(options =>
                 {
                     options.FileSets.ReplaceEmbeddedByPhysical<AbpUiModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}..{0}..{0}framework{0}src{0}Volo.Abp.UI", Path.DirectorySeparatorChar)));
                     options.FileSets.ReplaceEmbeddedByPhysical<AbpAspNetCoreMvcUiModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}..{0}..{0}framework{0}src{0}Volo.Abp.AspNetCore.Mvc.UI", Path.DirectorySeparatorChar)));
@@ -165,13 +177,8 @@ namespace Volo.AbpWebSite
             }
         }
 
-        private void ConfigureTheme(IServiceCollection services)
+        private void ConfigureTheme()
         {
-            services.Configure<WebEncoderOptions>(options => 
-            {
-                options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
-            });
-
             services.Configure<ThemingOptions>(options =>
             {
                 options.Themes.Add<AbpIoTheme>();
@@ -189,7 +196,9 @@ namespace Volo.AbpWebSite
             AsyncHelper.RunSync(() => app.ApplicationServices.GetService<DefaultValueSettingValueProvider>()
                 .SetAsync(app.ApplicationServices.GetService<ISettingDefinitionManager>()
                     .Get(LocalizationSettingNames.DefaultLanguage), "zh-Hans", null));
-            
+
+            app.UseCorrelationId();
+
             app.UseAbpRequestLocalization();
 
             if (env.IsDevelopment()) 
