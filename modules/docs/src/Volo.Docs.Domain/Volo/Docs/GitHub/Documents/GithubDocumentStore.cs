@@ -68,8 +68,8 @@ namespace Volo.Docs.GitHub.Documents
                 Format = project.Format,
                 LocalDirectory = localDirectory,
                 FileName = fileName,
-                Contributors = new List<DocumentContributor>(),
-                //Contributors = !isNavigationDocument ? await GetContributors(commitHistoryUrl, token, userAgent): new List<DocumentContributor>(),
+                //Contributors = new List<DocumentContributor>(),
+                Contributors = !isNavigationDocument ? await GetContributors(commitHistoryUrl, token, userAgent): new List<DocumentContributor>(),
                 Version = version,
                 Content = await DownloadWebContentAsStringAsync(rawDocumentUrl, token, userAgent)
             };
@@ -117,13 +117,6 @@ namespace Volo.Docs.GitHub.Documents
                     return new List<VersionInfo>();
                 }
             }
-
-            if (!versions.Any() && !string.IsNullOrEmpty(project.LatestVersionBranchName))
-            {
-                versions.Add(new VersionInfo { DisplayName = "1.0.0", Name = project.LatestVersionBranchName });
-            }
-
-            return versions;
         }
 
         public async Task<DocumentResource> GetResource(Project project, string resourceName, string version)
@@ -207,7 +200,7 @@ namespace Volo.Docs.GitHub.Documents
                         {
                             webClient.Headers.Add("Authorization", "token " + token);
                         }
-                        webClient.Headers.Add("User-Agent", "request");
+                        webClient.Headers.Add("User-Agent", userAgent ?? "");
 
                         var content = await webClient.DownloadStringTaskAsync(new Uri(rawUrl));
 
@@ -250,6 +243,7 @@ namespace Volo.Docs.GitHub.Documents
                         {
                             webClient.Headers.Add("Authorization", "token " + token);
                         }
+                        webClient.Headers.Add("User-Agent", userAgent ?? "");
 
                         var content = await webClient.DownloadDataTaskAsync(new Uri(rawUrl));
 

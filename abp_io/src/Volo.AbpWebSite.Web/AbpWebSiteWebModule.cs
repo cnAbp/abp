@@ -45,6 +45,7 @@ using Volo.AbpWebSite.EntityFrameworkCore;
 using Volo.Blogging;
 using Volo.Blogging.Files;
 using Volo.Docs;
+using Volo.Abp.SettingManagement;
 
 namespace Volo.AbpWebSite
 {
@@ -70,13 +71,12 @@ namespace Volo.AbpWebSite
             var hostingEnvironment = context.Services.GetHostingEnvironment();
             var configuration = context.Services.GetConfiguration();
 
-            ConfigureLanguages(context.Services);
-            ConfigureDatabaseServices(context.Services, configuration);
-            ConfigureVirtualFileSystem(context.Services, hostingEnvironment);
-            ConfigureBundles(context.Services);
-            ConfigureTheme(context.Services);
-
-            context.Services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            ConfigureLanguages();
+            ConfigureDatabaseServices(configuration);
+            ConfigureVirtualFileSystem(hostingEnvironment);
+            ConfigureBundles();
+            ConfigureTheme();
+            ConfigureBlogging(hostingEnvironment);
 
             context.Services.AddTransient<IGeetestManager, GeetestManager>();
             context.Services.AddTransient<IClientInfoProvider, ClientInfoProvider>();
@@ -179,7 +179,7 @@ namespace Volo.AbpWebSite
 
         private void ConfigureTheme()
         {
-            services.Configure<ThemingOptions>(options =>
+            Configure<ThemingOptions>(options =>
             {
                 options.Themes.Add<AbpIoTheme>();
                 options.DefaultThemeName = AbpIoTheme.Name;
@@ -193,7 +193,7 @@ namespace Volo.AbpWebSite
 
             app.ApplicationServices.GetService<AbpWebSiteDbContext>().Database.Migrate();
 
-            AsyncHelper.RunSync(() => app.ApplicationServices.GetService<DefaultValueSettingValueProvider>()
+            AsyncHelper.RunSync(() => app.ApplicationServices.GetService<ISettingManagementProvider>()
                 .SetAsync(app.ApplicationServices.GetService<ISettingDefinitionManager>()
                     .Get(LocalizationSettingNames.DefaultLanguage), "zh-Hans", null));
 
