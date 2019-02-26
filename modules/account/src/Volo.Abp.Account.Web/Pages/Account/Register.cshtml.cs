@@ -31,6 +31,8 @@ namespace Volo.Abp.Account.Web.Pages.Account
         [UnitOfWork] //TODO: Will be removed when we implement action filter
         public virtual async Task<IActionResult> OnPostAsync()
         {
+            throw new UserFriendlyException("暂时关闭注册!");
+
             ValidateModel();
 
             await CheckSelfRegistrationAsync();
