@@ -193,9 +193,7 @@ namespace Volo.AbpWebSite
 
             app.ApplicationServices.GetService<AbpWebSiteDbContext>().Database.Migrate();
 
-            AsyncHelper.RunSync(() => app.ApplicationServices.GetService<ISettingManagementProvider>()
-                .SetAsync(app.ApplicationServices.GetService<ISettingDefinitionManager>()
-                    .Get(LocalizationSettingNames.DefaultLanguage), "zh-Hans", null));
+            app.ApplicationServices.GetService<ISettingDefinitionManager>().Get(LocalizationSettingNames.DefaultLanguage).DefaultValue = "zh-Hans";
 
             app.UseCorrelationId();
 
