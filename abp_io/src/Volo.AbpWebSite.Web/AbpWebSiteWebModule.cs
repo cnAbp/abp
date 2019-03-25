@@ -97,7 +97,6 @@ namespace Volo.AbpWebSite
             Configure<BlogFileOptions>(options =>
             {
                 options.FileUploadLocalFolder = Path.Combine(hostingEnvironment.WebRootPath, "files");
-                options.FileUploadUrlRoot = "/files/";
             });
         }
 
