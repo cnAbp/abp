@@ -41,7 +41,7 @@
                 return;
             }
 
-            var $targetElement = $(hash);
+            var $targetElement = $(decodeURIComponent(hash));
 
             $targetElement = $targetElement.length ? $targetElement : $('[name=' + this.hash.slice(1) + ']');
 
