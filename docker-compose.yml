@@ -1,8 +1,8 @@
 version: "3"
 services:
   cn.abp.io:
+    image: maliming/cn.abp.io:latest
     container_name: cn.abp.io
-    image: cnabp/cn.abp.io
     depends_on:
       - cn.abp.io.mysql
     restart: always
