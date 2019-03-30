@@ -1,14 +1,14 @@
 FROM microsoft/dotnet:2.2-aspnetcore-runtime AS base
 
 # install System.Drawing native dependencies
-RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && echo "deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib\
-deb-src http://mirrors.aliyun.com/debian/ stretch main non-free contrib\
-deb http://mirrors.aliyun.com/debian-security stretch/updates main\
-deb-src http://mirrors.aliyun.com/debian-security stretch/updates main\
-deb http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib\
-deb-src http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib\
-deb http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib\
-deb-src http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib" > /etc/apt/sources.list
+# RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && echo "deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib\
+# deb-src http://mirrors.aliyun.com/debian/ stretch main non-free contrib\
+# deb http://mirrors.aliyun.com/debian-security stretch/updates main\
+# deb-src http://mirrors.aliyun.com/debian-security stretch/updates main\
+# deb http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib\
+# deb-src http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib\
+# deb http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib\
+# deb-src http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib" > /etc/apt/sources.list
 
 RUN apt-get update \
     && apt-get install -y --allow-unauthenticated \
