@@ -111,7 +111,7 @@ namespace Volo.Utils.SolutionTemplating.Building.Steps
             {
                 //TODO: This should get it from the related release! Not always from the master!
 
-                var commonPropsUrl = "https://raw.githubusercontent.com/abpframework/abp/master/common.props";
+                var commonPropsUrl = "https://raw.githubusercontent.com/cnAbp/abp/cn.abp.io/common.props";
                 var content = "";
                 using (var webClient = new WebClient())
                 {
