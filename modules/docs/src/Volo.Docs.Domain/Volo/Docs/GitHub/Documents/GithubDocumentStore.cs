@@ -1,19 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx;
-using Octokit;
-using Octokit.Internal;
-using Volo.Abp.Caching;
 using Volo.Abp.Domain.Services;
 using Volo.Docs.Documents;
 using Volo.Docs.GitHub.Projects;
 using Volo.Docs.Projects;
 using Newtonsoft.Json.Linq;
+using Octokit;
 using ProductHeaderValue = Octokit.ProductHeaderValue;
 using Project = Volo.Docs.Projects.Project;
 
@@ -40,6 +36,13 @@ namespace Volo.Docs.GitHub.Documents
 
         public const string Type = "GitHub";
 
+        private readonly IGithubRepositoryManager _githubRepositoryManager;
+
+        public GithubDocumentStore(IGithubRepositoryManager githubRepositoryManager)
+        {
+            _githubRepositoryManager = githubRepositoryManager;
+        }
+        
         public virtual async Task<Document> GetDocumentAsync(Project project, string documentName, string version)
         {
             var token = project.GetGitHubAccessTokenOrNull();
@@ -136,20 +139,7 @@ namespace Volo.Docs.GitHub.Documents
             var url = project.GetGitHubUrl();
             var ownerName = GetOwnerNameFromUrl(url);
             var repositoryName = GetRepositoryNameFromUrl(url);
-            var gitHubClient = CreateGitHubClient(project.GetGitHubAccessTokenOrNull());
-
-            return await gitHubClient
-                .Repository
-                .Release
-                .GetAll(ownerName, repositoryName);
-        }
-
-        private static GitHubClient CreateGitHubClient(string token = null)
-        {
-            //TODO: Why hard-coded "abpframework"? Should be configurable?
-            return token.IsNullOrWhiteSpace()
-                ? new GitHubClient(new ProductHeaderValue("abpframework"))
-                : new GitHubClient(new ProductHeaderValue("abpframework"), new InMemoryCredentialStore(new Credentials(token)));
+            return await _githubRepositoryManager.GetReleasesAsync(ownerName, repositoryName, project.GetGitHubAccessTokenOrNull());
         }
 
         protected virtual string GetOwnerNameFromUrl(string url)
@@ -185,40 +175,7 @@ namespace Volo.Docs.GitHub.Documents
             {
                 var githubContentCacheKey = rawUrl;
 
-                var githubContentCache = await _githubStringContentDistributedCache.GetAsync(githubContentCacheKey);
-                if (githubContentCache != null)
-                {
-                    return githubContentCache;
-                }
-
-                Logger.LogInformation("Downloading content from Github (DownloadWebContentAsStringAsync): " + rawUrl);
-                try
-                {
-                    using (var webClient = new WebClient())
-                    {
-                        if (!token.IsNullOrWhiteSpace())
-                        {
-                            webClient.Headers.Add("Authorization", "token " + token);
-                        }
-                        webClient.Headers.Add("User-Agent", userAgent ?? "");
-
-                        var content = await webClient.DownloadStringTaskAsync(new Uri(rawUrl));
-
-                        await _githubStringContentDistributedCache.SetAsync(githubContentCacheKey, content,
-                            new DistributedCacheEntryOptions
-                            {
-                                SlidingExpiration = TimeSpan.FromDays(1)
-                            });
-
-                        return content;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    //TODO: Only handle when document is really not available
-                    Logger.LogWarning(ex.Message, ex);
-                    throw new DocumentNotFoundException(rawUrl);
-                }
+                return await _githubRepositoryManager.GetFileRawStringContentAsync(rawUrl, token, userAgent);
             }
         }
 
@@ -228,40 +185,7 @@ namespace Volo.Docs.GitHub.Documents
             {
                 var githubContentCacheKey = rawUrl;
 
-                var githubContentCache = await _githubByteContentDistributedCache.GetAsync(githubContentCacheKey);
-                if (githubContentCache != null)
-                {
-                    return githubContentCache;
-                }
-
-                Logger.LogInformation("Downloading content from Github (DownloadWebContentAsByteArrayAsync): " + rawUrl);
-                try
-                {
-                    using (var webClient = new WebClient())
-                    {
-                        if (!token.IsNullOrWhiteSpace())
-                        {
-                            webClient.Headers.Add("Authorization", "token " + token);
-                        }
-                        webClient.Headers.Add("User-Agent", userAgent ?? "");
-
-                        var content = await webClient.DownloadDataTaskAsync(new Uri(rawUrl));
-
-                        await _githubByteContentDistributedCache.SetAsync(githubContentCacheKey, content,
-                            new DistributedCacheEntryOptions
-                            {
-                                SlidingExpiration = TimeSpan.FromDays(1)
-                            });
-
-                        return content;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    //TODO: Only handle when resource is really not available
-                    Logger.LogWarning(ex.Message, ex);
-                    throw new ResourceNotFoundException(rawUrl);
-                }
+                return await _githubRepositoryManager.GetFileRawByteArrayContentAsync(rawUrl, token, userAgent);
             }
         }
 
@@ -303,22 +227,6 @@ namespace Volo.Docs.GitHub.Documents
             return rootUrl
                 .Replace("github.com", "raw.githubusercontent.com")
                 .ReplaceFirst("/tree/", "/");
-        }
-
-        private class GithubWebClient : WebClient
-        {
-            protected override WebRequest GetWebRequest(Uri address)
-            {
-                var webRequest = base.GetWebRequest(address);
-                if (webRequest == null)
-                {
-                    return null;
-                }
-
-                webRequest.Timeout = 15000;
-
-                return webRequest;
-            }
         }
     }
 }

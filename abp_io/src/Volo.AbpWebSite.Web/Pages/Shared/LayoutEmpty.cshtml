@@ -21,7 +21,7 @@
     <meta name="author" content="https://github.com/cnAbp">
     @await Component.InvokeAsync(typeof(StandardMetaViewComponent))
     <abp-style-bundle name="@StandardBundles.Styles.Global" />
-    @RenderSection("styles", false)
+    @await RenderSectionAsync("styles", false)
 </head>
 <body class="abp-empty-layout">
 
@@ -54,7 +54,7 @@
         })();
     </script>
 
-    @RenderSection("scripts", false)
+    @await RenderSectionAsync("scripts", false)
 
 </body>
 </html>

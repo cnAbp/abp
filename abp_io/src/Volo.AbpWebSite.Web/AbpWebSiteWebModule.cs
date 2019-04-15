@@ -25,7 +25,6 @@ using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theming;
-using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Autofac;
 using Volo.Abp.Configuration;
 using Volo.Abp.Data;
@@ -226,18 +225,8 @@ namespace Volo.AbpWebSite
                 AsyncHelper.RunSync(async () =>
                 {
                     await scope.ServiceProvider
-                        .GetRequiredService<IIdentityDataSeeder>()
-                        .SeedAsync(
-                            "1q2w3E*"
-                        );
-
-                    await scope.ServiceProvider
-                        .GetRequiredService<IPermissionDataSeeder>()
-                        .SeedAsync(
-                            RolePermissionValueProvider.ProviderName,
-                            "admin",
-                            IdentityPermissions.GetAll().Union(BloggingPermissions.GetAll())
-                        );
+                        .GetRequiredService<IDataSeeder>()
+                        .SeedAsync();
                 });
             }
         }
