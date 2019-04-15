@@ -13,7 +13,7 @@
             var patt = new RegExp(regex);
             var res = patt.test($("#CompanyAndProjectName").val());
             if (!res) {
-                abp.message.error("Invalid Project Name.","");
+                abp.message.error("无效的项目名称.","");
                 event.preventDefault();
             }
         });

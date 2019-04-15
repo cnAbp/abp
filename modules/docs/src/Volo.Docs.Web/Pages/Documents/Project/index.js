@@ -117,7 +117,7 @@
 
         initSocialShareLinks();
 
-        initAD();
+        //initAD();
 
     });
 

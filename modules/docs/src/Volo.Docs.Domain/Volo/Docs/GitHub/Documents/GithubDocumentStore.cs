@@ -9,9 +9,8 @@ using Volo.Docs.Documents;
 using Volo.Docs.GitHub.Projects;
 using Volo.Docs.Projects;
 using Newtonsoft.Json.Linq;
-using Octokit;
-using ProductHeaderValue = Octokit.ProductHeaderValue;
-using Project = Volo.Docs.Projects.Project;
+using Volo.Abp.Caching;
+using Nito.AsyncEx;
 
 namespace Volo.Docs.GitHub.Documents
 {
@@ -19,27 +18,23 @@ namespace Volo.Docs.GitHub.Documents
 
     public class GithubDocumentStore : DomainService, IDocumentStore
     {
+        public const string Type = "GitHub";
+
         private readonly IDistributedCache<List<VersionInfo>> _versionInfoDistributedCache;
         private readonly IDistributedCache<string> _githubStringContentDistributedCache;
         private readonly IDistributedCache<byte[]> _githubByteContentDistributedCache;
         private readonly AsyncLock _asyncLock = new AsyncLock();
+        private readonly IGithubRepositoryManager _githubRepositoryManager;
 
         public GithubDocumentStore(
             IDistributedCache<List<VersionInfo>> versionInfoDistributedCache, 
             IDistributedCache<string> githubStringContentDistributedCache, 
-            IDistributedCache<byte[]> githubByteContentDistributedCache)
+            IDistributedCache<byte[]> githubByteContentDistributedCache,
+            IGithubRepositoryManager githubRepositoryManager)
         {
             _versionInfoDistributedCache = versionInfoDistributedCache;
             _githubStringContentDistributedCache = githubStringContentDistributedCache;
             _githubByteContentDistributedCache = githubByteContentDistributedCache;
-        }
-
-        public const string Type = "GitHub";
-
-        private readonly IGithubRepositoryManager _githubRepositoryManager;
-
-        public GithubDocumentStore(IGithubRepositoryManager githubRepositoryManager)
-        {
             _githubRepositoryManager = githubRepositoryManager;
         }
         
@@ -134,7 +129,7 @@ namespace Volo.Docs.GitHub.Documents
             return new DocumentResource(content);
         }
 
-        private async Task<IReadOnlyList<Release>> GetReleasesAsync(Project project)
+        private async Task<IReadOnlyList<Octokit.Release>> GetReleasesAsync(Project project)
         {
             var url = project.GetGitHubUrl();
             var ownerName = GetOwnerNameFromUrl(url);
@@ -175,7 +170,21 @@ namespace Volo.Docs.GitHub.Documents
             {
                 var githubContentCacheKey = rawUrl;
 
-                return await _githubRepositoryManager.GetFileRawStringContentAsync(rawUrl, token, userAgent);
+                var githubContentCache = await _githubStringContentDistributedCache.GetAsync(githubContentCacheKey);
+                if (githubContentCache != null)
+                {
+                    return githubContentCache;
+                }
+
+                var content = await _githubRepositoryManager.GetFileRawStringContentAsync(rawUrl, token, userAgent);
+                
+                await _githubStringContentDistributedCache.SetAsync(githubContentCacheKey, content,
+                            new DistributedCacheEntryOptions
+                            {
+                                SlidingExpiration = TimeSpan.FromDays(1)
+                            });
+
+                return content;
             }
         }
 
@@ -185,7 +194,21 @@ namespace Volo.Docs.GitHub.Documents
             {
                 var githubContentCacheKey = rawUrl;
 
-                return await _githubRepositoryManager.GetFileRawByteArrayContentAsync(rawUrl, token, userAgent);
+                var githubContentCache = await _githubByteContentDistributedCache.GetAsync(githubContentCacheKey);
+                if (githubContentCache != null)
+                {
+                    return githubContentCache;
+                }
+
+                var content = await _githubRepositoryManager.GetFileRawByteArrayContentAsync(rawUrl, token, userAgent);
+
+                await _githubByteContentDistributedCache.SetAsync(githubContentCacheKey, content,
+                            new DistributedCacheEntryOptions
+                            {
+                                SlidingExpiration = TimeSpan.FromDays(1)
+                            });
+                            
+                return content;
             }
         }
 
