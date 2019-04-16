@@ -105,10 +105,9 @@
         };
 
         var initAD = function(){
-            var tencent = '<div class="mt-2 mr-1"><a href="https://cloud.tencent.com/redirect.php?redirect=1025&cps_key=0830ceeb17f8c52968a1279ba57c36a2&from=console" target="_blank"><img src="/assets/tencentcloud.jpg" class="w-100"></a></div>';
-            var aliyun = '<div class="mt-2 mr-1"><a href="https://promotion.aliyun.com/ntms/act/qwbk.html?userCode=n7xgclf4" target="_blank"><img src="/assets/aliyun.png" class="w-100"></a></div>';
+            var zero = '<div class="mt-2 mr-5"><a href="https://aspnetzero.com/?ref=cnabp" target="_blank"><img src="/assets/zero.png" class="w-100"></a></div>';
 
-            $('#scroll-index').append($(tencent)).append($(aliyun));
+            $('#scroll-index').append($(zero));
         };
 
         initNavigationFilter("sidebar-scroll");
@@ -117,7 +116,7 @@
 
         initSocialShareLinks();
 
-        //initAD();
+        initAD();
 
     });
 
