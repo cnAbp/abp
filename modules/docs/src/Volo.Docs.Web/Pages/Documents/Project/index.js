@@ -105,7 +105,7 @@
         };
 
         var initAD = function(){
-            var zero = '<div class="mt-2 mr-5"><a href="https://aspnetzero.com/?ref=cnabp" target="_blank"><img src="/assets/zero.png" class="w-100"></a></div>';
+            var zero = '<div class="mt-2 mr-2"><a href="https://aspnetzero.com/?ref=cnabp" target="_blank"><img src="/assets/zero.png" class="w-100"></a></div>';
 
             $('#scroll-index').append($(zero));
         };
