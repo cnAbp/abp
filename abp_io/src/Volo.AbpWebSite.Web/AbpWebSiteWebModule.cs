@@ -103,6 +103,7 @@ namespace Volo.AbpWebSite
         {
             Configure<AbpLocalizationOptions>(options =>
             {
+                options.Languages.Clear();
                 options.Languages.Add(new LanguageInfo("zh-Hans", "zh-Hans", "简体中文"));
             });
         }

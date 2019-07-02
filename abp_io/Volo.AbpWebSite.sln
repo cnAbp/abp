@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volo.AbpWebSite.Web", "src\Volo.AbpWebSite.Web\Volo.AbpWebSite.Web.csproj", "{7B8B649E-1C25-43FD-87B1-E9FED3A57ED6}"
 EndProject
@@ -10,8 +10,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volo.AbpWebSite.Application", "src\Volo.AbpWebSite.Application\Volo.AbpWebSite.Application.csproj", "{DDE85F9B-15E6-4D1F-A27C-1B38569564F6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volo.AbpWebSite.EntityFrameworkCore", "src\Volo.AbpWebSite.EntityFrameworkCore\Volo.AbpWebSite.EntityFrameworkCore.csproj", "{028C05DB-61BF-41EF-B9AD-614A43CD0A7F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volo.Utils.SolutionTemplating", "src\Volo.Utils.SolutionTemplating\Volo.Utils.SolutionTemplating.csproj", "{742FCDDD-537C-42CC-AF16-A92C094D4B1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +33,6 @@ Global
 		{028C05DB-61BF-41EF-B9AD-614A43CD0A7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{028C05DB-61BF-41EF-B9AD-614A43CD0A7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{028C05DB-61BF-41EF-B9AD-614A43CD0A7F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{742FCDDD-537C-42CC-AF16-A92C094D4B1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{742FCDDD-537C-42CC-AF16-A92C094D4B1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{742FCDDD-537C-42CC-AF16-A92C094D4B1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{742FCDDD-537C-42CC-AF16-A92C094D4B1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
